@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{{ page_title|default:"" }} {% if page_title %}| {% endif %}{{ site_settings.site_name }}{% endblock %}</title>
+
+  {# ── SEO ── #}
+  <meta name="description" content="{% block meta_description %}{{ seo_description|default:site_settings.default_seo_description }}{% endblock %}" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+
+  {# ── Open Graph ── #}
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}" />
+  <meta property="og:title" content="{% block og_title %}{{ page_title|default:site_settings.site_name }}{% endblock %}" />
+  <meta property="og:description" content="{% block og_description %}{{ site_settings.default_seo_description }}{% endblock %}" />
+  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+  <meta property="og:site_name" content="{{ site_settings.site_name }}" />
+  <meta property="og:image" content="{% block og_image %}{% if site_settings.default_seo_image %}{{ request.scheme }}://{{ request.get_host }}{{ site_settings.default_seo_image.url }}{% endif %}{% endblock %}" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  {# ── Favicon ── #}
+  {% if site_settings.favicon %}
+  <link rel="icon" type="image/x-icon" href="{{ site_settings.favicon.url }}" />
+  {% endif %}
+
+  {# ── Fonts ── #}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Cormorant+Garamond:ital,wght@0,600;1,400&display=swap" rel="stylesheet" />
+
+  {# ── Tailwind CSS (CDN with custom config) ── #}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { DEFAULT: '#061B38', light: '#0d2d5e' },
+            blue: { primary: '#123F78', secondary: '#1F5DA8', light: '#2471C8' },
+            gold: { DEFAULT: '#DCA928', light: '#F0C354', dark: '#B8891F' },
+            offwhite: '#F6F8FC',
+            darktext: '#162033',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            elegant: ['Cormorant Garamond', 'serif'],
+          },
+          boxShadow: {
+            card: '0 4px 24px 0 rgba(18,63,120,0.10)',
+            gold: '0 4px 20px 0 rgba(220,169,40,0.25)',
+            deep: '0 8px 40px 0 rgba(6,27,56,0.18)',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.6s ease-out both',
+            'slide-up': 'slideUp 0.7s ease-out both',
+            'slide-in-left': 'slideInLeft 0.6s ease-out both',
+            'pulse-gold': 'pulseGold 2s ease-in-out infinite',
+            'bounce-slow': 'bounce 3s infinite',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            slideUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            slideInLeft: { '0%': { opacity: '0', transform: 'translateX(-30px)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },
+            pulseGold: { '0%,100%': { boxShadow: '0 0 0 0 rgba(220,169,40,0.4)' }, '50%': { boxShadow: '0 0 0 12px rgba(220,169,40,0)' } },
+          },
+          backgroundImage: {
+            'hero-gradient': 'linear-gradient(135deg, #061B38 0%, #123F78 60%, #1F5DA8 100%)',
+            'gold-gradient': 'linear-gradient(135deg, #DCA928 0%, #F0C354 100%)',
+            'card-gradient': 'linear-gradient(180deg, transparent 40%, rgba(6,27,56,0.92) 100%)',
+          },
+        },
+      },
+    }
+  </script>
+
+  {# ── Alpine.js ── #}
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  {# ── HTMX ── #}
+  <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
+
+  {# ── Custom CSS ── #}
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="font-sans bg-white text-darktext antialiased" x-data="{ mobileMenuOpen: false, searchOpen: false }">
+
+  {# ── HTMX CSRF ── #}
+  {% csrf_token %}
+  <script>
+    document.body.addEventListener('htmx:configRequest', (e) => {
+      e.detail.headers['X-CSRFToken'] = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    });
+  </script>
+
+  {# ── Messages ── #}
+  {% if messages %}
+  <div id="toast-container" class="fixed top-20 right-4 z-[9999] space-y-2" aria-live="polite">
+    {% for message in messages %}
+    <div class="toast-message flex items-center gap-3 px-5 py-3 rounded-xl shadow-deep text-white text-sm font-medium animate-slide-up
+      {% if message.tags == 'success' %}bg-green-600{% elif message.tags == 'error' %}bg-red-600{% elif message.tags == 'warning' %}bg-amber-500{% else %}bg-blue-primary{% endif %}"
+      x-data="{ show: true }" x-show="show" x-transition>
+      {% if message.tags == 'success' %}
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+      {% elif message.tags == 'error' %}
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      {% else %}
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      {% endif %}
+      <span>{{ message }}</span>
+      <button @click="show=false" class="ml-2 opacity-75 hover:opacity-100">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.toast-message').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.5s';
+        setTimeout(() => el.remove(), 500);
+      });
+    }, 5000);
+  </script>
+  {% endif %}
+
+  {# ── NAVIGATION HEADER ── #}
+  {% include "components/header.html" %}
+
+  {# ── SEARCH OVERLAY ── #}
+  <div x-show="searchOpen"
+       x-transition:enter="transition duration-300"
+       x-transition:enter-start="opacity-0 -translate-y-4"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       x-transition:leave="transition duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
+       class="fixed inset-0 z-[9998] bg-navy/95 backdrop-blur-sm flex items-start justify-center pt-32 px-4"
+       style="display:none"
+       @keydown.escape.window="searchOpen=false">
+    <div class="w-full max-w-2xl">
+      <h2 class="text-white text-xl font-semibold mb-4 text-center">Search our website</h2>
+      <form action="{% url 'core:search' %}" method="get" class="relative">
+        <input type="text" name="q" placeholder="Search articles, songs, events…"
+               class="w-full px-6 py-4 text-lg bg-white/10 text-white placeholder-white/50 border border-white/20 rounded-2xl focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30"
+               autofocus />
+        <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-gold hover:text-gold-light transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </button>
+      </form>
+      <button @click="searchOpen=false" class="mt-6 mx-auto flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        Close search
+      </button>
+    </div>
+  </div>
+
+  {# ── MAIN CONTENT ── #}
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  {# ── FOOTER ── #}
+  {% include "components/footer.html" %}
+
+  {# ── BACK TO TOP ── #}
+  <button id="back-to-top"
+          onclick="window.scrollTo({top:0,behavior:'smooth'})"
+          class="fixed bottom-6 right-6 z-50 w-11 h-11 bg-gold text-white rounded-full shadow-gold flex items-center justify-center opacity-0 transition-all duration-300 hover:bg-gold-dark hover:scale-110"
+          aria-label="Back to top">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+  </button>
+
+  {# ── Google Analytics ── #}
+  {% if site_settings.google_analytics_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site_settings.google_analytics_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ site_settings.google_analytics_id }}');
+  </script>
+  {% endif %}
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

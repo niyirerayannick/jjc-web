@@ -1,0 +1,99 @@
+{% extends "dashboard/base.html" %}
+
+{% block dashboard_content %}
+<div class="flex items-center justify-between mb-6">
+  <div class="flex items-center gap-3">
+    <select hx-get="?" hx-target="#articles-table" hx-swap="innerHTML"
+            class="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-primary/30" name="status">
+      <option value="">All Statuses</option>
+      <option value="draft">Draft</option>
+      <option value="pending">Pending</option>
+      <option value="published">Published</option>
+      <option value="archived">Archived</option>
+    </select>
+  </div>
+  <a href="{% url 'dashboard:article-create' %}"
+     class="flex items-center gap-2 px-5 py-2.5 bg-blue-primary text-white font-bold text-sm rounded-xl hover:bg-navy transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    New Article
+  </a>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-xs font-bold uppercase tracking-wider">
+      <tr>
+        <th class="px-5 py-3 text-left">Title</th>
+        <th class="px-5 py-3 text-left hidden md:table-cell">Category</th>
+        <th class="px-5 py-3 text-left hidden lg:table-cell">Author</th>
+        <th class="px-5 py-3 text-left hidden lg:table-cell">Date</th>
+        <th class="px-5 py-3 text-left">Status</th>
+        <th class="px-5 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="articles-table" class="divide-y divide-gray-50">
+      {% for article in articles %}
+      <tr class="hover:bg-gray-50 transition-colors">
+        <td class="px-5 py-3.5">
+          <div class="flex items-center gap-3">
+            {% if article.featured_image %}
+            <img src="{{ article.featured_image.url }}" alt="" class="w-8 h-8 rounded-lg object-cover flex-shrink-0" />
+            {% endif %}
+            <div>
+              <p class="font-medium text-navy line-clamp-1">{{ article.title }}</p>
+              {% if article.is_featured %}<span class="text-gold text-xs">★ Featured</span>{% endif %}
+            </div>
+          </div>
+        </td>
+        <td class="px-5 py-3.5 hidden md:table-cell text-gray-500">{{ article.category.name|default:"—" }}</td>
+        <td class="px-5 py-3.5 hidden lg:table-cell text-gray-500">{{ article.author.get_full_name|default:article.author.username|default:"—" }}</td>
+        <td class="px-5 py-3.5 hidden lg:table-cell text-gray-500">{{ article.created_at|date:"M j, Y" }}</td>
+        <td class="px-5 py-3.5">
+          <span class="px-2.5 py-1 text-xs rounded-full font-semibold
+            {% if article.status == 'published' %}bg-green-100 text-green-700{% elif article.status == 'draft' %}bg-gray-100 text-gray-500{% elif article.status == 'pending' %}bg-amber-100 text-amber-700{% else %}bg-red-100 text-red-600{% endif %}">
+            {{ article.get_status_display }}
+          </span>
+        </td>
+        <td class="px-5 py-3.5 text-right">
+          <div class="flex items-center justify-end gap-2">
+            <a href="{{ article.get_absolute_url }}" target="_blank" class="text-gray-400 hover:text-blue-primary transition-colors" title="View">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+            <a href="{% url 'dashboard:article-edit' article.pk %}" class="text-gray-400 hover:text-blue-primary transition-colors" title="Edit">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </a>
+            <form method="post" action="{% url 'dashboard:article-delete' article.pk %}"
+                  onsubmit="return confirm('Delete this article?');" class="inline">
+              {% csrf_token %}
+              <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="px-5 py-12 text-center text-gray-400">
+          <svg class="w-12 h-12 mx-auto mb-3 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          No articles found. <a href="{% url 'dashboard:article-create' %}" class="text-blue-primary hover:underline">Create your first article</a>.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if articles.has_other_pages %}
+  <div class="flex items-center justify-between px-5 py-4 border-t border-gray-100">
+    <p class="text-sm text-gray-500">Page {{ articles.number }} of {{ articles.paginator.num_pages }}</p>
+    <div class="flex gap-2">
+      {% if articles.has_previous %}
+      <a href="?page={{ articles.previous_page_number }}" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Previous</a>
+      {% endif %}
+      {% if articles.has_next %}
+      <a href="?page={{ articles.next_page_number }}" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Next</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

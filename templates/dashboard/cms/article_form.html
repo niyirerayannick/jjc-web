@@ -1,0 +1,231 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+  tinymce.init({
+    selector: '#id_content',
+    height: 550,
+    menubar: true,
+    skin: 'oxide',
+    content_css: 'default',
+    plugins: [
+      'advlist','autolink','lists','link','image','charmap','preview',
+      'anchor','searchreplace','visualblocks','code','fullscreen',
+      'insertdatetime','media','table','help','wordcount','codesample',
+      'quickbars','emoticons',
+    ],
+    toolbar: 'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | ' +
+             'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | ' +
+             'removeformat | link image media table codesample | code fullscreen preview',
+    content_style: 'body { font-family: Inter, sans-serif; font-size: 16px; line-height: 1.7; color: #162033; max-width: 100%; }',
+    images_upload_url: '{% url "dashboard:upload-tinymce" %}',
+    automatic_uploads: true,
+    file_picker_types: 'image',
+    relative_urls: false,
+    remove_script_host: false,
+    convert_urls: true,
+    setup: function(editor) {
+      editor.on('change', function() { editor.save(); });
+    }
+  });
+</script>
+{% endblock %}
+
+{% block dashboard_content %}
+<form method="post" enctype="multipart/form-data" x-data="articleForm()" @submit="saving=true">
+  {% csrf_token %}
+  <div class="flex flex-col xl:flex-row gap-6">
+
+    {# ── Main editor column ── #}
+    <div class="flex-1 space-y-5">
+
+      {# Title #}
+      <div class="bg-white rounded-2xl border border-gray-200 p-5">
+        <input type="text" name="title" value="{{ article.title|default:'' }}"
+               placeholder="Article title…"
+               class="w-full text-2xl font-bold text-navy placeholder-gray-300 border-0 focus:outline-none focus:ring-0 bg-transparent"
+               required
+               @input="updateSlug($event.target.value)"
+               id="id_title" />
+        <div class="flex items-center gap-2 mt-2 pt-2 border-t border-gray-100">
+          <span class="text-gray-400 text-xs">Slug:</span>
+          <input type="text" name="slug" :value="slug" id="id_slug"
+                 class="flex-1 text-xs text-gray-500 bg-transparent border-0 focus:outline-none focus:ring-0 font-mono" />
+          <button type="button" @click="editSlug=!editSlug" class="text-blue-primary text-xs hover:underline">Edit</button>
+        </div>
+      </div>
+
+      {# TinyMCE Content #}
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100 flex items-center gap-2">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          <span class="text-sm font-semibold text-gray-600">Content</span>
+        </div>
+        <div class="p-3">
+          <textarea name="content" id="id_content" class="w-full">{{ article.content|default:'' }}</textarea>
+        </div>
+      </div>
+
+      {# Excerpt #}
+      <div class="bg-white rounded-2xl border border-gray-200 p-5">
+        <label class="block text-sm font-semibold text-navy mb-2">Excerpt <span class="text-gray-400 font-normal">(Short summary — shown in listings)</span></label>
+        <textarea name="excerpt" rows="3" maxlength="500"
+                  placeholder="Write a short excerpt for this article…"
+                  class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-primary/30 focus:border-blue-primary resize-none">{{ article.excerpt|default:'' }}</textarea>
+      </div>
+
+      {# YouTube / Video URL #}
+      <div class="bg-white rounded-2xl border border-gray-200 p-5">
+        <label class="block text-sm font-semibold text-navy mb-2">YouTube / Video URL</label>
+        <input type="url" name="youtube_url" value="{{ article.youtube_url|default:'' }}"
+               placeholder="https://youtube.com/watch?v=…"
+               class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-primary/30 focus:border-blue-primary" />
+      </div>
+
+      {# SEO Panel #}
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden" x-data="{ seoOpen: false }">
+        <button type="button" @click="seoOpen=!seoOpen"
+                class="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
+          <span class="text-sm font-semibold text-navy">SEO Settings</span>
+          <svg class="w-4 h-4 text-gray-400 transition-transform" :class="seoOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div x-show="seoOpen" x-transition class="px-5 pb-5 space-y-4" style="display:none">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">SEO Title <span class="font-normal text-gray-400">(60 chars max)</span></label>
+            <input type="text" name="seo_title" value="{{ article.seo_title|default:'' }}" maxlength="300"
+                   class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-primary/30 focus:border-blue-primary" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Meta Description <span class="font-normal text-gray-400">(160 chars max)</span></label>
+            <textarea name="seo_description" rows="3" maxlength="300"
+                      class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-primary/30 focus:border-blue-primary resize-none">{{ article.seo_description|default:'' }}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ── Sidebar column ── #}
+    <div class="xl:w-72 space-y-5">
+
+      {# Publish box #}
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100">
+          <p class="font-bold text-navy text-sm">Publish</p>
+        </div>
+        <div class="p-5 space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Status</label>
+            <select name="status"
+                    class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-primary/30">
+              <option value="draft" {% if article.status == 'draft' or not article %}selected{% endif %}>Draft</option>
+              <option value="pending" {% if article.status == 'pending' %}selected{% endif %}>Pending Review</option>
+              <option value="published" {% if article.status == 'published' %}selected{% endif %}>Published</option>
+              <option value="archived" {% if article.status == 'archived' %}selected{% endif %}>Archived</option>
+            </select>
+          </div>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" name="is_featured" {% if article.is_featured %}checked{% endif %}
+                   class="w-4 h-4 text-blue-primary rounded border-gray-300 focus:ring-blue-primary" />
+            <span class="text-sm text-navy font-medium">Mark as Featured</span>
+          </label>
+
+          <div class="flex gap-2 pt-2">
+            <button type="submit" :disabled="saving"
+                    class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-blue-primary text-white font-bold text-sm rounded-xl hover:bg-navy transition-colors disabled:opacity-70">
+              <span x-show="!saving">Save Article</span>
+              <span x-show="saving">Saving…</span>
+            </button>
+            {% if article %}
+            <a href="{{ article.get_absolute_url }}" target="_blank"
+               class="px-3 py-2.5 bg-offwhite text-gray-600 rounded-xl hover:bg-gray-200 transition-colors" title="View on site">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+            {% endif %}
+          </div>
+
+          {% if article %}
+          <form method="post" action="{% url 'dashboard:article-delete' article.pk %}"
+                onsubmit="return confirm('Delete this article permanently?');">
+            {% csrf_token %}
+            <button type="submit" class="w-full py-2 text-red-500 hover:text-red-700 text-sm font-medium transition-colors">
+              Delete Article
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Category #}
+      <div class="bg-white rounded-2xl border border-gray-200 p-5">
+        <label class="block text-sm font-semibold text-navy mb-3">Category</label>
+        <select name="category"
+                class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-primary/30">
+          <option value="">— None —</option>
+          {% for cat in categories %}
+          <option value="{{ cat.pk }}" {% if article.category_id == cat.pk %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {# Featured image #}
+      <div class="bg-white rounded-2xl border border-gray-200 p-5" x-data="imageUpload()">
+        <p class="text-sm font-semibold text-navy mb-3">Featured Image</p>
+        {% if article.featured_image %}
+        <div class="mb-3 rounded-xl overflow-hidden">
+          <img :src="preview || '{{ article.featured_image.url }}'" alt="" class="w-full h-36 object-cover" />
+        </div>
+        {% else %}
+        <div x-show="preview" class="mb-3 rounded-xl overflow-hidden">
+          <img :src="preview" alt="" class="w-full h-36 object-cover" />
+        </div>
+        {% endif %}
+        <label class="block w-full cursor-pointer">
+          <input type="file" name="featured_image" accept="image/*" class="sr-only"
+                 @change="handleFile($event)" />
+          <div class="flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 text-sm hover:border-blue-primary hover:text-blue-primary transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            {{ article.featured_image|yesno:"Change image,Upload image" }}
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function articleForm() {
+  return {
+    saving: false,
+    slug: '{{ article.slug|default:"" }}',
+    editSlug: false,
+    updateSlug(title) {
+      if (!this.editSlug && !this.slug) {
+        this.slug = title.toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .trim()
+          .replace(/\s+/g, '-')
+          .substring(0, 200);
+        document.getElementById('id_slug').value = this.slug;
+      }
+    }
+  }
+}
+function imageUpload() {
+  return {
+    preview: null,
+    handleFile(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => this.preview = ev.target.result;
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+}
+</script>
+{% endblock %}

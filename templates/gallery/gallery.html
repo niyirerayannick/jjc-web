@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-hero-gradient pt-32 pb-16">
+  <div class="max-w-[1400px] mx-auto px-6">
+    <h1 class="text-4xl font-serif font-bold text-white mb-2">Music Gallery</h1>
+  </div>
+</div>
+<div class="max-w-[1400px] mx-auto px-6 py-12" x-data="lightbox()">
+  {# Album filter #}
+  {% if albums %}
+  <div class="flex flex-wrap gap-2 mb-8">
+    <a href="{% url 'gallery:gallery' %}" class="px-4 py-2 rounded-full text-sm font-semibold {% if not active_album %}bg-blue-primary text-white{% else %}bg-white border border-gray-200 text-gray-600 hover:bg-offwhite{% endif %}">All</a>
+    {% for album in albums %}
+    <a href="?album={{ album.slug }}" class="px-4 py-2 rounded-full text-sm font-semibold {% if active_album.pk == album.pk %}bg-blue-primary text-white{% else %}bg-white border border-gray-200 text-gray-600 hover:bg-offwhite{% endif %}">{{ album.name }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+    {% for item in media %}
+    {% if item.file %}
+    <div class="relative rounded-xl overflow-hidden group cursor-pointer aspect-square"
+         @click="openLightbox('{{ item.file.url }}', '{{ item.caption|escapejs }}')"
+         role="button" tabindex="0">
+      <img src="{{ item.file.url }}" alt="{{ item.alt_text|default:item.caption }}"
+           class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+      <div class="absolute inset-0 bg-gradient-to-t from-navy/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+        {% if item.caption %}<p class="text-white text-xs">{{ item.caption }}</p>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+    {% empty %}
+    <div class="col-span-5 text-center py-20 text-gray-400">No gallery media yet.</div>
+    {% endfor %}
+  </div>
+
+  {# Lightbox #}
+  <div x-show="isOpen" x-transition class="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4"
+       @click.self="closeLightbox()" @keydown.escape.window="closeLightbox()" style="display:none">
+    <button @click="closeLightbox()" class="absolute top-4 right-4 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <img :src="currentImage" :alt="currentCaption" class="max-h-[90vh] max-w-full rounded-xl object-contain" />
+    <p x-show="currentCaption" x-text="currentCaption" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm"></p>
+  </div>
+</div>
+<script>
+function lightbox() {
+  return {
+    isOpen: false, currentImage: '', currentCaption: '',
+    openLightbox(src, caption) { this.currentImage = src; this.currentCaption = caption; this.isOpen = true; document.body.style.overflow='hidden'; },
+    closeLightbox() { this.isOpen = false; document.body.style.overflow=''; }
+  }
+}
+</script>
+{% endblock %}

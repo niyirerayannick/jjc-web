@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{{ page_title|default:"Dashboard" }} | JJC Admin{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { DEFAULT: '#061B38', light: '#0d2d5e' },
+            blue: { primary: '#123F78', secondary: '#1F5DA8' },
+            gold: { DEFAULT: '#DCA928', light: '#F0C354', dark: '#B8891F' },
+            sidebar: '#0F2744',
+          }
+        }
+      }
+    }
+  </script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  {% load static %}
+  <style>
+    [x-cloak] { display: none !important; }
+    .material-icons-outlined {
+      font-family: 'Material Icons Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      display: inline-flex;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar-link { @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200; }
+    .sidebar-link.active { @apply text-white bg-white/15 shadow; }
+    .sidebar-link .material-icons-outlined { @apply flex-shrink-0; }
+    .stat-card { @apply bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow; }
+  </style>
+</head>
+<body class="h-full bg-gray-50 font-sans antialiased" x-data="{ sidebarOpen: true, mobileSidebarOpen: false }">
+
+  <div class="flex h-full">
+
+    {# ─── SIDEBAR ─── #}
+    <aside :class="sidebarOpen ? 'w-64' : 'w-16'"
+           class="hidden lg:flex flex-col bg-sidebar transition-all duration-300 min-h-screen fixed left-0 top-0 bottom-0 z-40">
+
+      {# Logo #}
+      <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10">
+        <div class="w-9 h-9 bg-gold rounded-xl flex items-center justify-center flex-shrink-0">
+          <span class="material-icons-outlined text-navy text-xl">play_circle</span>
+        </div>
+        <div x-show="sidebarOpen" x-transition class="overflow-hidden">
+          <p class="text-white text-sm font-bold leading-tight">JJC Admin</p>
+          <p class="text-white/50 text-xs">Dashboard</p>
+        </div>
+        <button @click="sidebarOpen=!sidebarOpen" class="ml-auto text-white/40 hover:text-white transition-colors flex-shrink-0">
+          <span class="material-icons-outlined text-sm">chevron_left</span>
+        </button>
+      </div>
+
+      {# Navigation #}
+      <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
+
+        <a href="{% url 'dashboard:home' %}" class="sidebar-link {% if active_nav == 'dashboard' %}active{% endif %}">
+          <span class="material-icons-outlined">dashboard</span>
+          <span x-show="sidebarOpen" x-transition>Dashboard</span>
+        </a>
+
+        {# Content #}
+        <div x-show="sidebarOpen" class="pt-4 pb-1 px-3">
+          <p class="text-white/30 text-xs font-bold tracking-widest uppercase">Content</p>
+        </div>
+        <a href="{% url 'dashboard:articles' %}" class="sidebar-link {% if active_nav == 'articles' %}active{% endif %}">
+          <span class="material-icons-outlined">article</span>
+          <span x-show="sidebarOpen" x-transition>Articles</span>
+        </a>
+        <a href="{% url 'dashboard:categories' %}" class="sidebar-link {% if active_nav == 'categories' %}active{% endif %}">
+          <span class="material-icons-outlined">local_offer</span>
+          <span x-show="sidebarOpen" x-transition>Categories</span>
+        </a>
+
+        {# Music #}
+        <div x-show="sidebarOpen" class="pt-4 pb-1 px-3">
+          <p class="text-white/30 text-xs font-bold tracking-widest uppercase">Music</p>
+        </div>
+        <a href="{% url 'dashboard:albums' %}" class="sidebar-link {% if active_nav == 'albums' %}active{% endif %}">
+          <span class="material-icons-outlined">album</span>
+          <span x-show="sidebarOpen" x-transition>Albums</span>
+        </a>
+        <a href="{% url 'dashboard:songs' %}" class="sidebar-link {% if active_nav == 'songs' %}active{% endif %}">
+          <span class="material-icons-outlined">music_note</span>
+          <span x-show="sidebarOpen" x-transition>Songs</span>
+        </a>
+
+        {# Events #}
+        <div x-show="sidebarOpen" class="pt-4 pb-1 px-3">
+          <p class="text-white/30 text-xs font-bold tracking-widest uppercase">Events</p>
+        </div>
+        <a href="{% url 'dashboard:events' %}" class="sidebar-link {% if active_nav == 'events' %}active{% endif %}">
+          <span class="material-icons-outlined">event</span>
+          <span x-show="sidebarOpen" x-transition>Events</span>
+        </a>
+        <a href="{% url 'dashboard:livestreams' %}" class="sidebar-link {% if active_nav == 'livestreams' %}active{% endif %}">
+          <span class="material-icons-outlined">videocam</span>
+          <span x-show="sidebarOpen" x-transition>Live Streams</span>
+        </a>
+
+        {# Gallery #}
+        <div x-show="sidebarOpen" class="pt-4 pb-1 px-3">
+          <p class="text-white/30 text-xs font-bold tracking-widest uppercase">Media</p>
+        </div>
+        <a href="{% url 'dashboard:gallery' %}" class="sidebar-link {% if active_nav == 'gallery' %}active{% endif %}">
+          <span class="material-icons-outlined">image</span>
+          <span x-show="sidebarOpen" x-transition>Gallery</span>
+        </a>
+        <a href="{% url 'dashboard:media-library' %}" class="sidebar-link {% if active_nav == 'media' %}active{% endif %}">
+          <span class="material-icons-outlined">folder</span>
+          <span x-show="sidebarOpen" x-transition>Media Library</span>
+        </a>
+
+        {# Sponsors #}
+        <div x-show="sidebarOpen" class="pt-4 pb-1 px-3">
+          <p class="text-white/30 text-xs font-bold tracking-widest uppercase">Sponsors & Ads</p>
+        </div>
+        <a href="{% url 'dashboard:sponsor-applications' %}" class="sidebar-link {% if active_nav == 'sponsors' %}active{% endif %}">
+          <span class="material-icons-outlined">favorite</span>
+          <span x-show="sidebarOpen" x-transition>Sponsors</span>
+        </a>
+        <a href="{% url 'dashboard:ad-campaigns' %}" class="sidebar-link {% if active_nav == 'advertising' %}active{% endif %}">
+          <span class="material-icons-outlined">campaign</span>
+          <span x-show="sidebarOpen" x-transition>Advertising</span>
+        </a>
+
+        {# People #}
+        <div x-show="sidebarOpen" class="pt-4 pb-1 px-3">
+          <p class="text-white/30 text-xs font-bold tracking-widest uppercase">People</p>
+        </div>
+        <a href="{% url 'dashboard:committee' %}" class="sidebar-link {% if active_nav == 'committee' %}active{% endif %}">
+          <span class="material-icons-outlined">group</span>
+          <span x-show="sidebarOpen" x-transition>Committee</span>
+        </a>
+        <a href="{% url 'dashboard:partners' %}" class="sidebar-link {% if active_nav == 'partners' %}active{% endif %}">
+          <span class="material-icons-outlined">public</span>
+          <span x-show="sidebarOpen" x-transition>Partners</span>
+        </a>
+
+        {# System #}
+        <div x-show="sidebarOpen" class="pt-4 pb-1 px-3">
+          <p class="text-white/30 text-xs font-bold tracking-widest uppercase">System</p>
+        </div>
+        <a href="{% url 'dashboard:slider' %}" class="sidebar-link {% if active_nav == 'slider' %}active{% endif %}">
+          <span class="material-icons-outlined">tune</span>
+          <span x-show="sidebarOpen" x-transition>Hero Slider</span>
+        </a>
+        <a href="{% url 'dashboard:messages' %}" class="sidebar-link {% if active_nav == 'messages' %}active{% endif %}">
+          <span class="material-icons-outlined">mail</span>
+          <span x-show="sidebarOpen" x-transition>Messages</span>
+          {% if stats.new_messages %}
+          <span class="ml-auto bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full" x-show="sidebarOpen">{{ stats.new_messages }}</span>
+          {% endif %}
+        </a>
+        <a href="{% url 'dashboard:newsletter' %}" class="sidebar-link {% if active_nav == 'newsletter' %}active{% endif %}">
+          <span class="material-icons-outlined">newspaper</span>
+          <span x-show="sidebarOpen" x-transition>Newsletter</span>
+        </a>
+        <a href="{% url 'dashboard:reports' %}" class="sidebar-link {% if active_nav == 'reports' %}active{% endif %}">
+          <span class="material-icons-outlined">bar_chart</span>
+          <span x-show="sidebarOpen" x-transition>Reports</span>
+        </a>
+        <a href="{% url 'dashboard:settings' %}" class="sidebar-link {% if active_nav == 'settings' %}active{% endif %}">
+          <span class="material-icons-outlined">settings</span>
+          <span x-show="sidebarOpen" x-transition>Settings</span>
+        </a>
+      </nav>
+
+      {# User at bottom #}
+      <div class="p-3 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-blue-secondary rounded-full flex items-center justify-center flex-shrink-0 text-white text-sm font-bold">
+            {{ request.user.first_name.0|default:request.user.username.0|upper }}
+          </div>
+          <div x-show="sidebarOpen" x-transition class="flex-1 min-w-0">
+            <p class="text-white text-xs font-medium truncate">{{ request.user.get_full_name|default:request.user.username }}</p>
+            <p class="text-white/40 text-xs truncate">{{ request.user.profile.get_role_display|default:"Admin" }}</p>
+          </div>
+          <a href="{% url 'accounts:logout' %}" x-show="sidebarOpen" class="text-white/40 hover:text-white transition-colors flex-shrink-0">
+            <span class="material-icons-outlined text-xl">logout</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    {# ─── MAIN CONTENT ─── #}
+    <div :class="sidebarOpen ? 'lg:ml-64' : 'lg:ml-16'" class="flex-1 flex flex-col min-h-screen transition-all duration-300">
+
+      {# Top bar #}
+      <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 lg:px-8 py-4">
+          <div class="flex items-center gap-4">
+            {# Mobile menu #}
+            <button @click="mobileSidebarOpen=!mobileSidebarOpen" class="lg:hidden text-gray-500 hover:text-navy transition-colors">
+              <span class="material-icons-outlined">menu</span>
+            </button>
+            <div>
+              <h1 class="text-lg font-bold text-navy">{{ page_title }}</h1>
+              {% if breadcrumb %}
+              <nav class="hidden sm:flex items-center gap-1 text-xs text-gray-400 mt-0.5">
+                <a href="{% url 'dashboard:home' %}" class="hover:text-navy transition-colors">Dashboard</a>
+                {% if page_title != 'Dashboard' %}
+                <span class="material-icons-outlined">chevron_right</span>
+                <span class="text-navy font-medium">{{ page_title }}</span>
+                {% endif %}
+              </nav>
+              {% endif %}
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="{% url 'core:home' %}" target="_blank"
+               class="hidden sm:flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-navy border border-gray-200 rounded-xl text-sm font-medium hover:border-gray-400 transition-all">
+              <span class="material-icons-outlined">open_in_new</span>
+              View Site
+            </a>
+          </div>
+        </div>
+
+        {# Django messages #}
+        {% if messages %}
+        <div class="px-4 lg:px-8 pb-3">
+          {% for message in messages %}
+          <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
+            {% if message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200{% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+            {% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}✕{% else %}ℹ{% endif %}
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </header>
+
+      {# Page content #}
+      <main class="flex-1 p-4 lg:p-8">
+        {% block dashboard_content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <script>
+    document.body.addEventListener('htmx:configRequest', (e) => {
+      const csrfEl = document.querySelector('[name=csrfmiddlewaretoken]');
+      if (csrfEl) e.detail.headers['X-CSRFToken'] = csrfEl.value;
+    });
+  </script>
+  {% csrf_token %}
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

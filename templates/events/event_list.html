@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-hero-gradient pt-32 pb-16">
+  <div class="max-w-[1400px] mx-auto px-6">
+    <h1 class="text-4xl font-serif font-bold text-white mb-2">Events</h1>
+    <p class="text-white/70">Upcoming concerts, outreaches, and worship nights</p>
+  </div>
+</div>
+<div class="max-w-[1400px] mx-auto px-6 py-12">
+  {# Tab buttons #}
+  <div class="flex gap-3 mb-8">
+    <a href="?tab=upcoming" class="px-5 py-2 rounded-full text-sm font-semibold {% if active_tab == 'upcoming' %}bg-blue-primary text-white{% else %}bg-offwhite text-gray-600 hover:bg-gray-200{% endif %} transition-colors">Upcoming</a>
+    <a href="?tab=past" class="px-5 py-2 rounded-full text-sm font-semibold {% if active_tab == 'past' %}bg-blue-primary text-white{% else %}bg-offwhite text-gray-600 hover:bg-gray-200{% endif %} transition-colors">Past Events</a>
+  </div>
+  {# Event type filters #}
+  {% if event_types %}
+  <div class="flex flex-wrap gap-2 mb-8">
+    {% for et in event_types %}
+    <a href="?tab={{ active_tab }}&type={{ et.slug }}" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-600 hover:border-blue-primary hover:text-blue-primary transition-colors">{{ et.name }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for event in events %}
+    <article class="bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-deep hover:-translate-y-1 transition-all duration-300 group flex flex-col">
+      <a href="{{ event.get_absolute_url }}" class="block overflow-hidden h-48 relative flex-shrink-0">
+        {% if event.featured_image or event.poster %}
+        <img src="{% if event.poster %}{{ event.poster.url }}{% else %}{{ event.featured_image.url }}{% endif %}"
+             alt="{{ event.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+        {% else %}
+        <div class="w-full h-full bg-gradient-to-br from-blue-primary to-navy flex items-center justify-center">
+          <svg class="w-12 h-12 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        {% endif %}
+        {% if event.event_type %}<span class="absolute top-3 left-3 px-2.5 py-1 bg-gold text-navy text-xs font-bold rounded-full">{{ event.event_type.name }}</span>{% endif %}
+        <span class="absolute top-3 right-3 px-2.5 py-1 text-xs font-bold rounded-full {% if event.status == 'upcoming' %}bg-green-500 text-white{% elif event.status == 'ongoing' %}bg-red-500 text-white{% else %}bg-gray-500 text-white{% endif %}">{{ event.get_status_display }}</span>
+      </a>
+      <div class="p-5 flex flex-col flex-1">
+        <div class="flex items-center gap-2 text-gray-400 text-xs mb-2.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <time>{{ event.start_date|date:"M j, Y" }}</time>
+          {% if event.start_time %}<span>at {{ event.start_time|time:"g:i A" }}</span>{% endif %}
+        </div>
+        {% if event.venue %}<div class="flex items-center gap-1.5 text-gray-400 text-xs mb-3"><svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg><span class="truncate">{{ event.venue }}</span></div>{% endif %}
+        <h3 class="font-semibold text-navy mb-2 leading-snug group-hover:text-blue-primary transition-colors flex-1"><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h3>
+        {% if event.short_description %}<p class="text-gray-500 text-sm line-clamp-2 mb-4">{{ event.short_description }}</p>{% endif %}
+        <a href="{{ event.get_absolute_url }}" class="inline-flex items-center gap-1.5 text-blue-primary text-sm font-semibold hover:gap-3 transition-all">
+          View Details <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    </article>
+    {% empty %}
+    <div class="col-span-3 text-center py-20 text-gray-400">
+      <svg class="w-16 h-16 mx-auto mb-4 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <p>No {{ active_tab }} events found.</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% include "components/pagination.html" with page_obj=events %}
+</div>
+{% endblock %}

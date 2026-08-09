@@ -1,0 +1,470 @@
+/* ============================================================
+   Jehovah Jireh Choir – Hero Slider Styles
+   ============================================================ */
+
+/* === Section Container === */
+.hero-section {
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  min-height: 0;
+  position: relative;
+}
+
+/* hero-track needs explicit height so inset-0 absolute children have a context */
+.hero-track {
+  position: relative;
+  height: 100%;
+}
+
+.hero-slide {
+  height: 100%;
+  min-height: 0;
+}
+
+/* === Background Image === */
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.8s ease;
+}
+
+/* Incoming slide image zooms in slightly */
+.hero-slide-entering .hero-media img {
+  transform: scale(1.03);
+}
+
+/* === Cinematic Gradient Overlay ===
+   Left 0-35%: strong dark navy for text legibility
+   Middle 35-62%: medium blend
+   Right 62-100%: minimal, choir photo visible clearly */
+.hero-gradient {
+  background: linear-gradient(
+    90deg,
+    rgba(6, 27, 56, 1.00)  0%,
+    rgba(6, 27, 56, 1.00) 28%,
+    rgba(6, 27, 56, 0.88) 40%,
+    rgba(6, 27, 56, 0.55) 58%,
+    rgba(6, 27, 56, 0.18) 75%,
+    rgba(6, 27, 56, 0.04) 90%,
+    rgba(6, 27, 56, 0.00) 100%
+  );
+}
+
+/* === Hero Content Area === */
+.hero-content {
+  padding-bottom: clamp(118px, 15vh, 158px); /* room for preview cards + dots */
+  padding-left: 60px;   /* keep text clear of left arrow */
+  padding-right: 60px;  /* keep text clear of right arrow */
+  padding-top: clamp(96px, 13vh, 126px); /* fixed top bar + navigation */
+}
+
+/* === Hero Copy (text block) === */
+.hero-copy {
+  max-width: 520px;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.65s ease 0.1s, transform 0.65s ease 0.1s;
+}
+
+.hero-copy-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === Eyebrow === */
+.hero-eyebrow {
+  margin-bottom: 1.1rem;
+}
+
+.hero-eyebrow span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: #DCA928;
+}
+
+/* === Main Title === */
+.hero-title {
+  font-size: clamp(30px, 3.4vw, 52px);
+  line-height: 1.06;
+  margin-bottom: 0.15rem;
+  color: #ffffff;
+}
+
+/* === Gold Highlighted Line === */
+.hero-gold {
+  font-size: clamp(29px, 3.2vw, 50px);
+  line-height: 1.06;
+  color: #DCA928;
+  margin-top: 0.1rem;
+  margin-bottom: 1.1rem;
+  display: block;
+}
+
+/* === Description === */
+.hero-desc {
+  font-size: clamp(15px, 1.2vw, 17px);
+  line-height: 1.68;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 470px;
+  margin-bottom: 1.75rem;
+}
+
+/* === CTA Buttons === */
+.hero-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.72rem 1.75rem;
+  font-size: 13.5px;
+  font-weight: 700;
+  border-radius: 9999px;
+  background: #DCA928;
+  color: #061b38;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+}
+
+.hero-btn-primary:hover {
+  background: #e8b82a;
+  box-shadow: 0 6px 22px rgba(220, 169, 40, 0.50);
+  transform: translateY(-2px);
+}
+
+.hero-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.72rem 1.75rem;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.38);
+  transition: all 0.22s ease;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+}
+
+.hero-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.70);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+/* === Navigation Arrows === */
+.hero-arrow {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  backdrop-filter: blur(6px);
+}
+
+.hero-arrow:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #DCA928;
+  color: #DCA928;
+}
+
+/* === Pagination Dots === */
+.hero-dots {
+  bottom: 104px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.hero-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.hero-dot:hover {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.hero-dot-active {
+  width: 22px !important;
+  background: #DCA928 !important;
+  border-color: #DCA928 !important;
+}
+
+/* === Preview Cards Strip === */
+.hero-previews {
+  background: linear-gradient(
+    to top,
+    rgba(6, 27, 56, 1.00) 0%,
+    rgba(6, 27, 56, 0.90) 50%,
+    transparent 100%
+  );
+  padding-top: 40px;
+}
+
+.hero-previews-scroll {
+  display: flex;
+  gap: 0.875rem;
+  padding-bottom: 18px; /* breathing room at bottom of hero */
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hero-previews-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Compact horizontal preview card */
+.hero-preview-card {
+  display: flex;
+  align-items: stretch;
+  min-width: 200px;
+  max-width: 290px;
+  height: 82px;
+  flex: 1 1 0;
+  border-radius: 9px;
+  overflow: hidden;
+  background: rgba(6, 27, 56, 0.60);
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.hero-preview-card:hover .hero-preview-thumb img {
+  transform: scale(1.05);
+}
+
+.hero-preview-card:hover {
+  border-color: rgba(255, 255, 255, 0.26);
+  background: rgba(18, 63, 120, 0.60);
+}
+
+.hero-preview-active {
+  border-color: #DCA928 !important;
+  background: rgba(18, 40, 80, 0.75) !important;
+  box-shadow: 0 0 0 1px rgba(220, 169, 40, 0.30), 0 4px 18px rgba(0, 0, 0, 0.40);
+}
+
+/* Thumbnail */
+.hero-preview-thumb {
+  width: 105px;
+  min-width: 88px;
+  max-width: 110px;
+  height: 82px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.hero-preview-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.35s ease;
+}
+
+.hero-preview-thumb-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #123F78, #061b38);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card text */
+.hero-preview-text {
+  flex: 1;
+  padding: 0.5rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-preview-category {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #DCA928;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-preview-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.90);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hero-preview-active .hero-preview-category {
+  color: #f0c040;
+}
+
+.hero-preview-active .hero-preview-title {
+  color: #ffffff;
+}
+
+/* === Mobile Styles === */
+@media (max-width: 1024px) {
+  .hero-preview-card {
+    min-width: 178px;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-track {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .hero-slide {
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* Mobile: vertical overlay so background shows at top, navy at bottom for text */
+  .hero-gradient {
+    background: linear-gradient(
+      180deg,
+      rgba(6, 27, 56, 0.28) 0%,
+      rgba(6, 27, 56, 0.42) 32%,
+      rgba(6, 27, 56, 0.85) 68%,
+      rgba(6, 27, 56, 0.98) 100%
+    );
+  }
+
+  .hero-content {
+    padding-top: clamp(70px, 11vh, 88px);
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: clamp(52px, 8vh, 76px);
+    align-items: flex-end;
+  }
+
+  .hero-copy {
+    max-width: 100%;
+  }
+
+  .hero-dots {
+    bottom: clamp(20px, 3.5vh, 32px);
+  }
+
+  .hero-title,
+  .hero-gold {
+    font-size: clamp(25px, 7.8vw, 38px);
+  }
+
+  .hero-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,0.86);
+  }
+
+  /* Dots provide compact navigation; preview cards stay desktop-only. */
+  .hero-previews {
+    display: none;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero-content {
+    padding-bottom: clamp(46px, 7vh, 62px);
+  }
+
+  .hero-eyebrow {
+    margin-bottom: 0.65rem;
+  }
+
+  .hero-gold {
+    margin-bottom: 0.7rem;
+  }
+
+  .hero-desc {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .hero-btn-primary,
+  .hero-btn-secondary {
+    padding: 0.62rem 1.15rem;
+    font-size: 12px;
+  }
+}
+
+@media (max-height: 720px) and (min-width: 769px) {
+  .hero-content {
+    padding-top: 90px;
+    padding-bottom: 108px;
+  }
+
+  .hero-eyebrow,
+  .hero-desc {
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-title,
+  .hero-gold {
+    font-size: clamp(28px, 3vw, 40px);
+  }
+
+  .hero-preview-card,
+  .hero-preview-thumb {
+    height: 68px;
+  }
+
+  .hero-dots {
+    bottom: 86px;
+  }
+}
+
+@media (max-width: 430px) and (max-height: 650px) {
+  .hero-content {
+    padding-top: 64px;
+    padding-bottom: 42px;
+  }
+
+  .hero-eyebrow {
+    display: none;
+  }
+
+  .hero-title,
+  .hero-gold {
+    font-size: clamp(22px, 7vw, 28px);
+  }
+
+  .hero-desc {
+    font-size: 12px;
+  }
+
+  .hero-btn-secondary {
+    display: none;
+  }
+}

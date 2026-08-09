@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="bg-hero-gradient pt-32 pb-16">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="eyebrow justify-center mb-4 text-gold"><span>Support The Ministry</span></div>
+    <h1 class="text-4xl font-serif font-bold text-white mb-3">Become a Sponsor</h1>
+    <p class="text-white/70 text-lg">Partner with us to bring the gospel through music to more lives across Rwanda and beyond.</p>
+  </div>
+</div>
+
+<section class="py-16 lg:py-24 bg-white">
+  <div class="max-w-[1200px] mx-auto px-6">
+
+    {# Sponsor groups #}
+    {% if groups %}
+    <div class="grid md:grid-cols-3 gap-6 mb-16">
+      {% for group in groups %}
+      <div class="rounded-3xl border-2 {% if forloop.counter == 2 %}border-gold shadow-gold{% else %}border-gray-100 shadow-card{% endif %} p-6 hover:shadow-deep transition-all duration-300">
+        {% if forloop.counter == 2 %}
+        <span class="inline-block px-3 py-1 bg-gold text-navy text-xs font-black rounded-full mb-4 tracking-wider">FEATURED</span>
+        {% endif %}
+        <h3 class="text-xl font-serif font-bold text-navy mb-2">{{ group.name }}</h3>
+        {% if group.suggested_contribution %}
+        <p class="text-gold font-bold mb-3">From {{ group.suggested_contribution }} RWF</p>
+        {% endif %}
+        <div class="text-gray-600 text-sm">{{ group.description|safe }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# Application form #}
+    <div class="max-w-2xl mx-auto">
+      <h2 class="text-2xl font-serif font-bold text-navy mb-8 text-center">Submit Your Application</h2>
+      {% if messages %}{% for m in messages %}<div class="alert alert-{{ m.tags }} mb-4">{{ m }}</div>{% endfor %}{% endif %}
+      <form method="post" class="space-y-5 bg-white rounded-3xl border border-gray-200 shadow-card p-8">
+        {% csrf_token %}
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div><label class="form-label">Full Name *</label><input type="text" name="full_name" required class="form-input" /></div>
+          <div><label class="form-label">Email *</label><input type="email" name="email" required class="form-input" /></div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div><label class="form-label">Phone</label><input type="tel" name="phone" class="form-input" /></div>
+          <div><label class="form-label">Organization</label><input type="text" name="organization" class="form-input" /></div>
+        </div>
+        <div><label class="form-label">Location</label><input type="text" name="location" class="form-input" placeholder="City, Country" /></div>
+        <div>
+          <label class="form-label">Sponsor Group</label>
+          <select name="sponsor_group" class="form-input">
+            <option value="">— Choose a group —</option>
+            {% for group in groups %}<option value="{{ group.pk }}">{{ group.name }}{% if group.suggested_contribution %} (from {{ group.suggested_contribution }} RWF){% endif %}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div><label class="form-label">Contribution Amount (RWF)</label><input type="number" name="contribution_amount" min="0" class="form-input" /></div>
+          <div>
+            <label class="form-label">Frequency</label>
+            <select name="contribution_frequency" class="form-input">
+              <option value="one_time">One-time</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="annually">Annually</option>
+            </select>
+          </div>
+        </div>
+        <div><label class="form-label">Message</label><textarea name="message" rows="4" class="form-input resize-none" placeholder="Tell us about yourself and why you want to partner with us…"></textarea></div>
+        <button type="submit" class="w-full py-4 bg-gold text-navy font-bold rounded-full hover:bg-gold-light transition-colors text-lg">
+          Submit Application
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

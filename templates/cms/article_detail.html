@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ article.get_seo_title }}{% endblock %}
+{% block og_description %}{{ article.get_seo_description }}{% endblock %}
+{% block og_image %}{% if article.featured_image %}{{ request.scheme }}://{{ request.get_host }}{{ article.featured_image.url }}{% endif %}{% endblock %}
+
+{% block content %}
+{# Header #}
+<div class="bg-hero-gradient pt-32 pb-20 relative overflow-hidden">
+  <div class="absolute inset-0 opacity-10">
+    {% if article.featured_image %}
+    <img src="{{ article.featured_image.url }}" alt="" class="w-full h-full object-cover blur-xl scale-110" />
+    {% endif %}
+  </div>
+  <div class="relative max-w-4xl mx-auto px-6">
+    <div class="breadcrumb mb-4">
+      <a href="/">Home</a><span>›</span>
+      <a href="{% url 'cms:article-list' %}">News</a><span>›</span>
+      {% if article.category %}<a href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a><span>›</span>{% endif %}
+      <span class="current line-clamp-1">{{ article.title }}</span>
+    </div>
+    {% if article.category %}
+    <span class="inline-block px-3 py-1 bg-gold text-navy text-xs font-bold rounded-full mb-4">{{ article.category.name }}</span>
+    {% endif %}
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-white leading-tight mb-5">{{ article.title }}</h1>
+    <div class="flex flex-wrap items-center gap-4 text-white/60 text-sm">
+      {% if article.author %}<span>By {{ article.author.get_full_name|default:article.author.username }}</span>{% endif %}
+      <time datetime="{{ article.published_date|date:'Y-m-d' }}">{{ article.published_date|date:"F j, Y" }}</time>
+      <span>{{ article.reading_time }} min read</span>
+      <span>{{ article.views }} views</span>
+    </div>
+  </div>
+</div>
+
+{# Main article content #}
+<article class="max-w-4xl mx-auto px-6 py-12 lg:py-16">
+
+  {# Featured image #}
+  {% if article.featured_image %}
+  <div class="rounded-3xl overflow-hidden mb-10 shadow-deep -mt-16 relative z-10">
+    <img src="{{ article.featured_image.url }}" alt="{{ article.featured_image_alt|default:article.title }}"
+         class="w-full max-h-[500px] object-cover" />
+  </div>
+  {% endif %}
+
+  {# Excerpt #}
+  {% if article.excerpt %}
+  <p class="text-xl text-gray-600 font-elegant italic leading-relaxed mb-8 pb-8 border-b border-gray-100">
+    {{ article.excerpt }}
+  </p>
+  {% endif %}
+
+  {# Video embed #}
+  {% if article.youtube_url %}
+  <div class="mb-10 rounded-2xl overflow-hidden shadow-deep aspect-video">
+    <iframe src="{{ article.youtube_embed_url }}"
+            class="w-full h-full" frameborder="0" allowfullscreen loading="lazy"
+            title="{{ article.title }}"></iframe>
+  </div>
+  {% endif %}
+
+  {# Content #}
+  <div class="prose-jjc">
+    {{ article.content|safe }}
+  </div>
+
+  {# Tags #}
+  {% if article.tags.all %}
+  <div class="flex flex-wrap gap-2 mt-10 pt-8 border-t border-gray-100">
+    <span class="text-gray-500 text-sm font-medium">Tags:</span>
+    {% for tag in article.tags.all %}
+    <span class="px-3 py-1 bg-offwhite text-navy text-xs font-medium rounded-full border border-gray-200">{{ tag.name }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {# Social share #}
+  <div class="mt-10 pt-8 border-t border-gray-100">
+    <p class="text-sm font-semibold text-navy mb-4">Share this article:</p>
+    <div class="flex flex-wrap gap-3">
+      <button onclick="shareContent('facebook')" class="flex items-center gap-2 px-4 py-2 bg-[#1877F2] text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+        Facebook
+      </button>
+      <button onclick="shareContent('twitter')" class="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X (Twitter)
+      </button>
+      <button onclick="shareContent('whatsapp')" class="flex items-center gap-2 px-4 py-2 bg-[#25D366] text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </button>
+      <button onclick="shareContent('copy')" class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-navy text-sm font-medium rounded-full hover:bg-gray-200 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        Copy Link
+      </button>
+    </div>
+  </div>
+</article>
+
+{# Related articles #}
+{% if related_articles %}
+<section class="bg-offwhite py-16">
+  <div class="max-w-[1400px] mx-auto px-6">
+    <h2 class="text-2xl font-serif font-bold text-navy mb-8">Related Articles</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      {% for rel in related_articles %}
+      <article class="bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-deep hover:-translate-y-1 transition-all duration-300 group">
+        <a href="{{ rel.get_absolute_url }}" class="block overflow-hidden h-40 relative">
+          {% if rel.featured_image %}
+          <img src="{{ rel.featured_image.url }}" alt="{{ rel.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+          {% else %}
+          <div class="w-full h-full bg-gradient-to-br from-blue-primary to-navy"></div>
+          {% endif %}
+        </a>
+        <div class="p-4">
+          <p class="text-gray-400 text-xs mb-1.5">{{ rel.published_date|date:"M j, Y" }}</p>
+          <h3 class="font-semibold text-navy text-sm line-clamp-2 group-hover:text-blue-primary transition-colors">
+            <a href="{{ rel.get_absolute_url }}">{{ rel.title }}</a>
+          </h3>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

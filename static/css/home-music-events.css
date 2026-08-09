@@ -1,0 +1,95 @@
+.music-events-section {
+  padding: clamp(3.5rem, 6vw, 5.5rem) 1.5rem;
+  background: #fff;
+}
+
+.music-events-container { max-width: 1320px; margin: 0 auto; }
+.music-events-grid { display: grid; grid-template-columns: minmax(0, 46fr) minmax(0, 54fr); gap: clamp(1.5rem, 3vw, 2.75rem); }
+.music-panel, .event-panel { min-width: 0; display: flex; flex-direction: column; }
+
+.music-events-heading { min-height: 48px; margin-bottom: 1.15rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid #e5eaf2; }
+.music-events-heading h2 { margin: 0; color: #061b38; font: 800 clamp(1.05rem, 1.6vw, 1.35rem)/1.2 Inter, sans-serif; letter-spacing: .055em; text-transform: uppercase; }
+.music-events-heading a { flex: none; color: #123f78; font-size: .78rem; font-weight: 700; text-decoration: none; }
+.music-events-heading a span { color: #dca928; margin-left: .2rem; }
+.music-events-heading a:hover { color: #061b38; }
+
+.album-feature-card, .event-feature-card { min-height: 390px; flex: 1; overflow: hidden; border-radius: 18px; transition: box-shadow .25s ease, transform .25s ease; }
+.album-feature-card:hover, .event-feature-card:hover { box-shadow: 0 14px 38px rgba(6,27,56,.16); }
+.album-feature-card { display: grid; grid-template-columns: 45% 55%; background: #fff; border: 1px solid #dfe5ee; box-shadow: 0 6px 24px rgba(18,63,120,.09); }
+.album-cover-wrap, .event-poster-wrap { min-height: 100%; overflow: hidden; position: relative; background: #0d2d5e; }
+.album-cover, .event-poster { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform .4s ease; }
+.album-feature-card:hover .album-cover, .event-feature-card:hover .event-poster { transform: scale(1.02); }
+.album-cover-fallback { display: flex; align-items: center; justify-content: center; color: #dca928; background: linear-gradient(145deg,#123f78,#061b38); }
+.album-cover-fallback svg { width: 4rem; fill: none; stroke: currentColor; stroke-width: 1.2; }
+.album-feature-content { min-width: 0; padding: 1.45rem; display: flex; flex-direction: column; }
+.album-kicker { margin: 0 0 .3rem; color: #d09616; font-size: .68rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.album-feature-content h3 { margin: 0; color: #061b38; font: 800 clamp(1.02rem, 1.45vw, 1.3rem)/1.22 "Playfair Display", serif; }
+.album-meta { margin: .4rem 0 .7rem; color: #6d7788; font-size: .76rem; }
+.album-track-list { list-style: none; padding: 0; margin: 0 0 1rem; border-top: 1px solid #e8ecf2; }
+.album-track-list li { border-bottom: 1px solid #e8ecf2; }
+.album-track-list a { min-height: 39px; padding: .45rem .25rem; display: grid; grid-template-columns: 1.8rem minmax(0,1fr) 1.5rem; align-items: center; gap: .35rem; color: #25324a; text-decoration: none; border-radius: 5px; transition: background .2s ease, color .2s ease; }
+.album-track-list a:hover { background: #f4f7fb; color: #123f78; }
+.track-number { color: #98a2b2; font-size: .68rem; font-weight: 700; }
+.track-title { overflow: hidden; color: inherit; font-size: .76rem; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.track-action { color: #d09b19; font-size: .68rem; text-align: center; }
+.track-empty { padding: 1.25rem 0; color: #7c8797; font-size: .78rem; }
+.album-listen-button { margin-top: auto; min-height: 43px; display: flex; align-items: center; justify-content: center; gap: .45rem; border-radius: 8px; background: #123f78; color: #fff; font-size: .76rem; font-weight: 800; letter-spacing: .07em; text-decoration: none; text-transform: uppercase; transition: background .2s ease, transform .2s ease; }
+.album-listen-button:hover { background: #061b38; transform: translateY(-1px); }
+
+.event-feature-card { display: grid; grid-template-columns: 46% 54%; color: #fff; background: linear-gradient(145deg,#123f78,#061b38); box-shadow: 0 8px 30px rgba(6,27,56,.22); }
+.event-type { position: absolute; top: 1rem; left: 1rem; padding: .35rem .65rem; border-radius: 999px; color: #061b38; background: #dca928; font-size: .62rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.event-feature-content { min-width: 0; padding: 1.25rem; display: flex; flex-direction: column; }
+.event-feature-content h3 { margin: 0 0 .9rem; color: #fff; font: 700 clamp(1rem,1.4vw,1.25rem)/1.25 "Playfair Display",serif; }
+.event-facts { margin: 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .65rem .9rem; }
+.event-facts > div { min-width: 0; display: flex; gap: .55rem; align-items: flex-start; }
+.event-facts > div:last-child { grid-column: 1/-1; }
+.event-facts dt { flex: none; width: 1.25rem; color: #dca928; text-align: center; }
+.event-facts dd { min-width: 0; margin: 0; }
+.event-facts strong, .event-facts span { display: block; }
+.event-facts strong { color: #fff; font-size: .73rem; line-height: 1.35; text-transform: uppercase; }
+.event-facts dd span { color: rgba(255,255,255,.62); font-size: .66rem; margin-top: .12rem; }
+.event-countdown { margin-top: auto; padding-top: .9rem; }
+.event-countdown > p { margin: 0 0 .45rem; color: rgba(255,255,255,.55); font-size: .6rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.countdown-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .38rem; }
+.countdown-grid > div { min-width: 0; padding: .55rem .2rem; border: 1px solid rgba(255,255,255,.09); border-radius: 7px; background: rgba(3,18,39,.7); text-align: center; }
+.countdown-grid strong, .countdown-grid span { display: block; }
+.countdown-grid strong { color: #fff; font-size: clamp(.92rem,1.5vw,1.25rem); line-height: 1; }
+.countdown-grid span { margin-top: .25rem; color: rgba(255,255,255,.55); font-size: .52rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.event-started { padding: .75rem; border-radius: 7px; background: rgba(3,18,39,.65); color: #fff; text-align: center; font-size: .75rem; }
+.event-started a { color: #dca928; font-weight: 800; }
+.event-actions { margin-top: .8rem; display: grid; grid-template-columns: 1fr 1.15fr; gap: .55rem; }
+.event-actions a { min-height: 40px; padding: .65rem .55rem; display: flex; align-items: center; justify-content: center; border-radius: 7px; font-size: .65rem; font-weight: 800; letter-spacing: .045em; text-align: center; text-decoration: none; text-transform: uppercase; transition: transform .2s ease, background .2s ease; }
+.event-actions a:hover { transform: translateY(-1px); }
+.event-primary-action { color: #061b38; background: #dca928; }
+.event-primary-action:hover { background: #f0c354; }
+.event-secondary-action { color: #fff; border: 1px solid rgba(255,255,255,.35); background: transparent; }
+.event-secondary-action:hover { background: rgba(255,255,255,.09); }
+
+.music-events-empty { min-height: 390px; padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #dfe5ee; border-radius: 18px; color: #667085; background: #f8fafc; text-align: center; }
+.music-events-empty p { margin: 0 0 1rem; }
+.music-events-empty a { color: #123f78; font-weight: 750; }
+.music-events-empty-dark { color: rgba(255,255,255,.72); border-color: transparent; background: #061b38; }
+.music-events-empty-dark a { color: #dca928; }
+.music-events-section a:focus-visible { outline: 3px solid #dca928; outline-offset: 3px; }
+
+@media (max-width: 1050px) {
+  .music-events-grid { grid-template-columns: 1fr; gap: 2.75rem; }
+  .album-feature-card, .event-feature-card { min-height: 380px; }
+}
+
+@media (max-width: 640px) {
+  .music-events-section { padding-left: 1rem; padding-right: 1rem; }
+  .music-events-heading { align-items: flex-end; }
+  .music-events-heading h2 { max-width: 65%; }
+  .album-feature-card, .event-feature-card { grid-template-columns: 1fr; }
+  .album-cover-wrap { min-height: 0; aspect-ratio: 1/1; }
+  .event-poster-wrap { min-height: 0; aspect-ratio: 4/3; }
+  .album-feature-content, .event-feature-content { padding: 1.25rem; }
+  .event-countdown { margin-top: 1rem; }
+}
+
+@media (max-width: 360px) {
+  .music-events-heading { align-items: flex-start; flex-direction: column; padding-bottom: .7rem; }
+  .music-events-heading h2 { max-width: none; }
+  .event-actions { grid-template-columns: 1fr; }
+}

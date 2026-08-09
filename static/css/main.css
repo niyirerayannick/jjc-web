@@ -1,0 +1,253 @@
+/* ============================================================
+   Jehovah Jireh Choir – ULK | Main CSS
+   Custom styles complementing Tailwind CSS
+   ============================================================ */
+
+/* ── Base ── */
+* { -webkit-tap-highlight-color: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography ── */
+.font-serif { font-family: 'Playfair Display', Georgia, serif; }
+.font-elegant { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+.prose-jjc {
+  color: #162033;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.prose-jjc h1, .prose-jjc h2, .prose-jjc h3,
+.prose-jjc h4, .prose-jjc h5, .prose-jjc h6 {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: #061B38;
+  font-weight: 700;
+  margin-top: 1.75em;
+  margin-bottom: 0.75em;
+  line-height: 1.3;
+}
+.prose-jjc h2 { font-size: 1.625rem; }
+.prose-jjc h3 { font-size: 1.25rem; }
+.prose-jjc p { margin-bottom: 1.25em; }
+.prose-jjc a { color: #123F78; text-decoration: underline; text-decoration-color: rgba(18,63,120,0.3); }
+.prose-jjc a:hover { color: #DCA928; }
+.prose-jjc ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1.25em; }
+.prose-jjc ol { list-style-type: decimal; padding-left: 1.5em; margin-bottom: 1.25em; }
+.prose-jjc li { margin-bottom: 0.5em; }
+.prose-jjc blockquote {
+  border-left: 4px solid #DCA928;
+  padding-left: 1.25em;
+  margin: 1.5em 0;
+  font-style: italic;
+  color: #4a5568;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.125rem;
+}
+.prose-jjc img {
+  border-radius: 0.75rem;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5em auto;
+  display: block;
+}
+.prose-jjc table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.9em;
+}
+.prose-jjc th {
+  background: #061B38;
+  color: white;
+  padding: 0.75em 1em;
+  text-align: left;
+  font-weight: 600;
+}
+.prose-jjc td {
+  padding: 0.65em 1em;
+  border-bottom: 1px solid #e2e8f0;
+}
+.prose-jjc tr:nth-child(even) td { background: #F6F8FC; }
+
+/* ── Line clamp utilities ── */
+.line-clamp-1 { -webkit-line-clamp: 1; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-2 { -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-3 { -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ── Scrollbar styling ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F6F8FC; }
+::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #A0AEC0; }
+
+/* ── Focus styles for accessibility ── */
+:focus-visible {
+  outline: 2px solid #DCA928;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Page transition ── */
+.page-enter { opacity: 0; transform: translateY(12px); }
+.page-enter-active { transition: opacity 0.4s ease, transform 0.4s ease; }
+
+/* ── Scroll reveal ── */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── Gold divider ── */
+.gold-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #DCA928, #F0C354);
+  border-radius: 2px;
+  margin: 0 auto 1.5rem;
+}
+
+/* ── Section eyebrow ── */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #DCA928;
+}
+.eyebrow::before,
+.eyebrow::after {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 2px;
+  background: #DCA928;
+  flex-shrink: 0;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 0.25rem 0.5rem; }
+.breadcrumb a { color: #6b7280; font-size: 0.8rem; transition: color 0.2s; }
+.breadcrumb a:hover { color: #DCA928; }
+.breadcrumb span { color: #9ca3af; font-size: 0.75rem; }
+.breadcrumb .current { color: #162033; font-size: 0.8rem; font-weight: 500; }
+
+/* ── Back to top button ── */
+#back-to-top.show { opacity: 1 !important; }
+
+/* ── Card hover effects ── */
+.hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.hover-lift:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(6,27,56,0.15); }
+
+/* ── Image overlay gradient ── */
+.img-overlay-gradient {
+  background: linear-gradient(180deg, transparent 30%, rgba(6,27,56,0.9) 100%);
+}
+
+/* ── Audio player ── */
+audio {
+  width: 100%;
+  border-radius: 50px;
+  background: #F6F8FC;
+}
+audio::-webkit-media-controls-panel { background: #F6F8FC; }
+
+/* ── Form elements ── */
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: white;
+  color: #162033;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #123F78;
+  box-shadow: 0 0 0 3px rgba(18,63,120,0.12);
+}
+.form-input::placeholder { color: #a0aec0; }
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #162033;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.01em;
+}
+
+/* ── Alert/notification styles ── */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+.alert-success { background: #F0FFF4; border: 1px solid #9AE6B4; color: #276749; }
+.alert-error { background: #FFF5F5; border: 1px solid #FEB2B2; color: #C53030; }
+.alert-info { background: #EBF8FF; border: 1px solid #90CDF4; color: #2A69AC; }
+.alert-warning { background: #FFFAF0; border: 1px solid #FAD689; color: #975A16; }
+
+/* ── Hero section overlay text ── */
+.hero-text-shadow { text-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+
+/* ── Mobile menu transition ── */
+.mobile-menu-enter { opacity: 0; transform: translateX(-20px); }
+.mobile-menu-enter-done { opacity: 1; transform: translateX(0); transition: all 0.3s ease; }
+
+/* ── Lyric styles ── */
+.lyrics-content {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.1rem;
+  line-height: 2;
+  color: #2D3748;
+}
+
+/* ── Loading skeleton ── */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Print styles ── */
+@media print {
+  header, footer, .no-print { display: none !important; }
+  body { background: white; color: black; }
+  .print-break-before { page-break-before: always; }
+}
+
+/* ── High contrast mode ── */
+@media (prefers-contrast: high) {
+  .text-white\/70, .text-white\/60, .text-white\/50 { opacity: 1; }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

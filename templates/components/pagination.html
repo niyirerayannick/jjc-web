@@ -1,0 +1,17 @@
+{% if page_obj.has_other_pages %}
+<div class="flex items-center justify-center gap-2 mt-10">
+  {% if page_obj.has_previous %}
+  <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium hover:bg-offwhite hover:border-blue-primary hover:text-blue-primary transition-all">← Previous</a>
+  {% endif %}
+  {% for num in page_obj.paginator.page_range %}
+  {% if page_obj.number == num %}
+  <span class="px-4 py-2 bg-blue-primary text-white rounded-xl text-sm font-medium">{{ num }}</span>
+  {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+  <a href="?page={{ num }}" class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium hover:bg-offwhite transition-all">{{ num }}</a>
+  {% endif %}
+  {% endfor %}
+  {% if page_obj.has_next %}
+  <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium hover:bg-offwhite hover:border-blue-primary hover:text-blue-primary transition-all">Next →</a>
+  {% endif %}
+</div>
+{% endif %}

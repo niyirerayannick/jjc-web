@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="bg-hero-gradient pt-32 pb-20">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="eyebrow justify-center mb-4 text-gold"><span>Who We Are</span></div>
+    <h1 class="text-4xl lg:text-5xl font-serif font-bold text-white mb-4">About Jehovah Jireh Choir</h1>
+    <p class="text-white/70 text-lg max-w-2xl mx-auto">A spirit-filled gospel choir from the University of Lay Catholics of Kigali, dedicated to worship and ministry.</p>
+  </div>
+</div>
+
+<section class="py-16 lg:py-24">
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="prose-jjc">
+      <h2>Our Story</h2>
+      <p>Jehovah Jireh Choir – ULK was founded by students of the University of Lay Catholics of Kigali (ULK) with a burning desire to use music as a tool for evangelization, worship, and community transformation. The name "Jehovah Jireh" — meaning "The Lord Will Provide" — reflects our deep trust in God's provision as we go about our ministry.</p>
+      <p>Since our founding, the choir has grown into one of Rwanda's most recognized university gospel choirs, known for powerful worship performances, community outreach programs, and unwavering commitment to sharing the gospel through music.</p>
+      <h2>Our Values</h2>
+      <ul>
+        <li><strong>Excellence in Worship</strong> — We pursue the highest standard in our musical ministry as an offering to God.</li>
+        <li><strong>Evangelization</strong> — We take the gospel beyond the church walls, to campuses, communities, and prisons.</li>
+        <li><strong>Unity</strong> — We celebrate our diversity as members and believe in the power of collective worship.</li>
+        <li><strong>Service</strong> — We exist to serve God, our university, and the broader community.</li>
+        <li><strong>Integrity</strong> — We model Christ-like character in everything we do.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{% if committee %}
+<section class="py-16 bg-offwhite">
+  <div class="max-w-[1400px] mx-auto px-6">
+    <div class="text-center mb-12">
+      <div class="eyebrow justify-center mb-4"><span>Leadership</span></div>
+      <h2 class="text-3xl font-serif font-bold text-navy">Our Committee</h2>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {% for member in committee %}
+      <div class="bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-deep hover:-translate-y-1 transition-all duration-300 text-center group">
+        <div class="h-48 bg-gradient-to-br from-blue-primary to-navy overflow-hidden">
+          {% if member.photo %}
+          <img src="{{ member.photo.url }}" alt="{{ member.full_name }}" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
+          {% else %}
+          <div class="w-full h-full flex items-center justify-center">
+            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-white text-3xl font-bold">{{ member.full_name.0 }}</div>
+          </div>
+          {% endif %}
+        </div>
+        <div class="p-5">
+          <h3 class="font-bold text-navy text-base">{{ member.full_name }}</h3>
+          <p class="text-gold text-xs font-semibold uppercase tracking-wider mt-1">{{ member.position }}</p>
+          {% if member.short_bio %}
+          <p class="text-gray-500 text-sm mt-2 line-clamp-2">{{ member.short_bio }}</p>
+          {% endif %}
+          {% if member.email or member.facebook or member.instagram %}
+          <div class="flex items-center justify-center gap-2 mt-3">
+            {% if member.email %}<a href="mailto:{{ member.email }}" class="w-7 h-7 bg-offwhite rounded-full flex items-center justify-center text-gray-400 hover:text-blue-primary transition-colors"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></a>{% endif %}
+            {% if member.facebook %}<a href="{{ member.facebook }}" target="_blank" class="w-7 h-7 bg-offwhite rounded-full flex items-center justify-center text-gray-400 hover:text-blue-primary transition-colors"><svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>{% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-navy to-blue-primary flex items-center justify-center py-12 px-4">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-gold rounded-2xl mb-4">
+        <svg class="w-8 h-8 text-navy" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/></svg>
+      </div>
+      <h1 class="text-2xl font-serif font-bold text-white">Sign In</h1>
+      <p class="text-white/60 text-sm mt-1">Jehovah Jireh Choir — Dashboard</p>
+    </div>
+    <div class="bg-white rounded-3xl shadow-deep p-8">
+      {% if messages %}{% for m in messages %}<div class="alert alert-{{ m.tags }} mb-4">{{ m }}</div>{% endfor %}{% endif %}
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
+        <div>
+          <label class="form-label">Username</label>
+          <input type="text" name="username" required autofocus class="form-input" placeholder="your username" autocomplete="username" />
+        </div>
+        <div>
+          <label class="form-label">Password</label>
+          <input type="password" name="password" required class="form-input" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button type="submit" class="w-full py-3 bg-blue-primary text-white font-bold rounded-full hover:bg-navy transition-colors">
+          Sign In
+        </button>
+      </form>
+      <p class="text-center text-sm text-gray-500 mt-6">
+        <a href="{% url 'core:home' %}" class="text-blue-primary hover:underline">← Back to website</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
