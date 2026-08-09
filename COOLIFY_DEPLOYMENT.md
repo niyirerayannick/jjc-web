@@ -1,6 +1,6 @@
 # Coolify production deployment
 
-This project deploys as a Docker Compose stack containing Django/Gunicorn, PostgreSQL, and Nginx. PostgreSQL data and uploaded media use persistent Docker volumes.
+This project deploys as a Docker Compose application containing Django/Gunicorn and Nginx. PostgreSQL is created as a separate Coolify database resource; uploaded media uses a persistent Docker volume.
 
 ## 1. Prepare the repository
 
@@ -17,8 +17,8 @@ python -c "import secrets; print(secrets.token_urlsafe(64))"
 1. In Coolify, create a new resource from the Git repository.
 2. Select Docker Compose and use `docker-compose.prod.yml`.
 3. Assign the public domain to the `nginx` service on port `80`.
-4. Keep the `postgres_data`, `media_data`, and `static_data` volumes persistent.
-5. Do not expose the PostgreSQL service publicly.
+4. Keep the `media_data` and `static_data` volumes persistent.
+5. Create a PostgreSQL database resource in the same Coolify project and environment. Use its internal connection URL, not its public URL.
 
 Set these runtime environment variables in Coolify:
 
@@ -27,9 +27,7 @@ SECRET_KEY=<generated-secret>
 ALLOWED_HOSTS=example.com,www.example.com
 CSRF_TRUSTED_ORIGINS=https://example.com,https://www.example.com
 SITE_URL=https://example.com
-DB_NAME=jjc_db
-DB_USER=jjc_user
-DB_PASSWORD=<strong-random-database-password>
+DATABASE_URL=postgresql://USER:PASSWORD@POSTGRES_INTERNAL_HOST:5432/DATABASE
 DEFAULT_FROM_EMAIL=Jehovah Jireh Choir <noreply@example.com>
 ```
 
@@ -58,7 +56,7 @@ Generated Django permissions, sessions, login-attempt logs, thumbnails, admin lo
 For the first import the database is normally empty. Before repeating an import, create a PostgreSQL backup from the Coolify server:
 
 ```bash
-docker exec <postgres-container> pg_dump -U jjc_user -d jjc_db -Fc > jjc-before-import.dump
+docker exec <postgres-container> pg_dump -U <database-user> -d <database-name> -Fc > jjc-before-import.dump
 ```
 
 Also back up the media volume. Never import over an active production site without this backup.

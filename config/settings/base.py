@@ -99,20 +99,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME', default='jjc_db'),
-        'USER': env('DB_USER', default='jjc_user'),
-        'PASSWORD': env('DB_PASSWORD', default='jjc_password'),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'),
-        'OPTIONS': {
-            'connect_timeout': 10,
-        },
+# Database: production can use one PostgreSQL DATABASE_URL. Split variables
+# remain available for local/non-Coolify environments.
+database_url = env('DATABASE_URL', default='')
+if database_url:
+    DATABASES = {
+        'default': env.db_url_config(database_url)
     }
-}
+    DATABASES['default']['CONN_MAX_AGE'] = 60
+    DATABASES['default'].setdefault('OPTIONS', {})['connect_timeout'] = 10
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='jjc_db'),
+            'USER': env('DB_USER', default='jjc_user'),
+            'PASSWORD': env('DB_PASSWORD', default='jjc_password'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
+            'OPTIONS': {'connect_timeout': 10},
+        }
+    }
 
 # Auth
 AUTH_PASSWORD_VALIDATORS = [

@@ -1,19 +1,4 @@
 services:
-  db:
-    image: postgres:16-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: ${DB_NAME:?Set DB_NAME in Coolify}
-      POSTGRES_USER: ${DB_USER:?Set DB_USER in Coolify}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Coolify}
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   web:
     build: .
     volumes:
@@ -25,11 +10,7 @@ services:
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:?Set ALLOWED_HOSTS in Coolify}
       CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?Set CSRF_TRUSTED_ORIGINS in Coolify}
       SITE_URL: ${SITE_URL:?Set SITE_URL in Coolify}
-      DB_NAME: ${DB_NAME:?Set DB_NAME in Coolify}
-      DB_USER: ${DB_USER:?Set DB_USER in Coolify}
-      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Coolify}
-      DB_HOST: db
-      DB_PORT: "5432"
+      DATABASE_URL: ${DATABASE_URL:?Set the Coolify PostgreSQL internal URL}
       EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
       EMAIL_HOST: ${EMAIL_HOST:-}
       EMAIL_PORT: ${EMAIL_PORT:-587}
@@ -37,9 +18,6 @@ services:
       EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
       EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
       DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-noreply@example.com}
-    depends_on:
-      db:
-        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:8000/robots.txt >/dev/null || exit 1"]
@@ -62,6 +40,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
   media_data:
   static_data:
