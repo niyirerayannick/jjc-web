@@ -31,6 +31,17 @@ DATABASE_URL=postgresql://USER:PASSWORD@POSTGRES_INTERNAL_HOST:5432/DATABASE
 DEFAULT_FROM_EMAIL=Jehovah Jireh Choir <noreply@example.com>
 ```
 
+To seed a brand-new database directly during the first Coolify deployment, also set:
+
+```dotenv
+RUN_SEED_ON_DEPLOY=true
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL=your-email@example.com
+DJANGO_SUPERUSER_PASSWORD=<strong-unique-admin-password>
+```
+
+After the first successful deployment, change `RUN_SEED_ON_DEPLOY` to `false`. The guarded command refuses to overwrite a database that already contains articles, albums, events, or slides.
+
 Add SMTP variables when email delivery is ready. Sensitive values should be runtime-only variables. The compose file marks required variables so Coolify stops before an incomplete deployment.
 
 Deploy once. The web entrypoint automatically runs migrations and collects static files on every release.
@@ -76,11 +87,10 @@ docker ps --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}'
 mkdir -p /tmp/jjc-transfer
 tar -xzf /tmp/site-transfer.tar.gz -C /tmp/jjc-transfer
 docker cp /tmp/jjc-transfer/. <web-container>:/tmp/site-transfer/
-docker exec <web-container> sh /app/deployment/import-production-data.sh
-docker cp /tmp/jjc-transfer/media/. <web-container>:/app/media/
+docker exec <web-container> python /app/seed_production.py
 ```
 
-The `/app/media` destination is the persistent `media_data` volume. Imported files therefore survive future deployments.
+The Python seeder imports the fixture and copies media into the persistent `/app/media` volume. It refuses to run when application data already exists unless `--force` is supplied. Always create backups before using `--force`.
 
 ## 6. Verify before going public
 
