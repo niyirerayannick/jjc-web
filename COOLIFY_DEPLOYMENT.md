@@ -28,6 +28,7 @@ ALLOWED_HOSTS=example.com,www.example.com
 CSRF_TRUSTED_ORIGINS=https://example.com,https://www.example.com
 SITE_URL=https://example.com
 DATABASE_URL=postgresql://USER:PASSWORD@POSTGRES_INTERNAL_HOST:5432/DATABASE
+SERVE_MEDIA_FILES=true
 DEFAULT_FROM_EMAIL=Jehovah Jireh Choir <noreply@example.com>
 ```
 

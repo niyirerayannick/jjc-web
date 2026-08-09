@@ -3,6 +3,7 @@ from .base import *  # noqa: F401, F403
 from .base import env
 
 DEBUG = False
+SERVE_MEDIA_FILES = env.bool('SERVE_MEDIA_FILES', default=True)
 
 # Security settings
 SECURE_BROWSER_XSS_FILTER = True

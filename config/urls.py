@@ -1,6 +1,6 @@
 """URL configuration for Jehovah Jireh Choir – ULK."""
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
@@ -51,3 +51,15 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+elif getattr(settings, 'SERVE_MEDIA_FILES', False):
+    # Coolify may route directly to Gunicorn. Serve persistent uploads through
+    # Django in that deployment mode; Nginx can still take over /media later.
+    from django.views.static import serve as serve_media
+    urlpatterns += [
+        re_path(
+            r'^media/(?P<path>.*)$',
+            serve_media,
+            {'document_root': settings.MEDIA_ROOT, 'show_indexes': False},
+            name='production-media',
+        ),
+    ]
