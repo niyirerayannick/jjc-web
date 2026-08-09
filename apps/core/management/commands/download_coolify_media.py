@@ -1,7 +1,8 @@
 """Download approved public choir images into persistent Coolify media storage."""
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
-import requests
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.management import call_command
@@ -31,20 +32,21 @@ class Command(BaseCommand):
                 self.stdout.write(f'Exists: {storage_path}')
                 continue
             try:
-                response = requests.get(url, timeout=30)
-                response.raise_for_status()
-                content_type = response.headers.get('Content-Type', '')
-                if not content_type.startswith('image/'):
-                    raise CommandError(f'Unexpected content type for {url}: {content_type}')
+                request = Request(url, headers={'User-Agent': 'JJC-Coolify-Media/1.0'})
+                with urlopen(request, timeout=30) as response:
+                    content_type = response.headers.get_content_type()
+                    if not content_type.startswith('image/'):
+                        raise CommandError(f'Unexpected content type for {url}: {content_type}')
+                    image_data = response.read()
                 if options['replace'] and default_storage.exists(storage_path):
                     default_storage.delete(storage_path)
                 saved_path = default_storage.save(
                     storage_path,
-                    ContentFile(response.content, name=Path(storage_path).name),
+                    ContentFile(image_data, name=Path(storage_path).name),
                 )
                 self.stdout.write(self.style.SUCCESS(f'Downloaded: {saved_path}'))
                 downloaded += 1
-            except requests.RequestException as exc:
+            except (HTTPError, URLError, TimeoutError) as exc:
                 raise CommandError(f'Could not download {url}: {exc}') from exc
 
         call_command('link_coolify_media')
