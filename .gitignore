@@ -65,5 +65,7 @@ venv.bak/
 dmypy.json
 staticfiles/
 media/
+deployment/data/
+deployment/*.tar.gz
 node_modules/
 *.DS_Store

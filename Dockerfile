@@ -21,13 +21,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
-# Collect static files (done at build time)
-RUN python manage.py collectstatic --noinput --settings=config.settings.production || true
-
 # Create media directory
 RUN mkdir -p media staticfiles
 
+COPY deployment/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 8000
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["gunicorn", "config.wsgi:application", \
      "--bind", "0.0.0.0:8000", \
