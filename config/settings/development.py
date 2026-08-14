@@ -1,5 +1,5 @@
-"""Development settings."""
-from .base import *  # noqa: F401, F403
+"""Development settings using the local SQLite database."""
+from .local import *  # noqa: F401, F403
 
 DEBUG = True
 

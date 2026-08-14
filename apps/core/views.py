@@ -5,7 +5,10 @@ from django.views.generic import TemplateView
 from django.utils import timezone
 from django.db.models import Prefetch, Q
 
-from .models import SliderSlide, CommitteeMember, Partner, SiteSettings
+from .models import (
+    SliderSlide, CommitteeMember, Partner, SiteSettings, ContentPage,
+    SiteStatistic, TimelineMilestone, MinistryArea,
+)
 
 
 def home(request):
@@ -104,6 +107,9 @@ def home(request):
         'partners': partners,
         'sponsor_groups': sponsor_groups,
         'mid_banner_ad': mid_banner_ad,
+        'homepage_page': ContentPage.objects.filter(slug='home', is_published=True).first(),
+        'site_statistics': SiteStatistic.objects.filter(is_active=True, show_on_homepage=True),
+        'ministry_areas': MinistryArea.objects.filter(is_active=True, show_on_homepage=True),
         'page_title': 'Home',
         **ministry_context,
     }
@@ -114,6 +120,8 @@ def about(request):
     committee = CommitteeMember.objects.filter(is_active=True).order_by('order')
     context = {
         'committee': committee,
+        'content_page': ContentPage.objects.filter(slug='about', is_published=True).first(),
+        'site_statistics': SiteStatistic.objects.filter(is_active=True),
         'page_title': 'About Us',
         'breadcrumb': [('Home', '/'), ('Who We Are', '#'), ('About Us', '')],
     }
@@ -122,6 +130,9 @@ def about(request):
 
 def history(request):
     return render(request, 'public/history.html', {
+        'content_page': ContentPage.objects.filter(slug='history', is_published=True).first(),
+        'milestones': TimelineMilestone.objects.filter(is_active=True),
+        'site_statistics': SiteStatistic.objects.filter(is_active=True),
         'page_title': 'Our History',
         'breadcrumb': [('Home', '/'), ('Who We Are', '#'), ('Our History', '')],
     })
@@ -129,8 +140,18 @@ def history(request):
 
 def mission_vision(request):
     return render(request, 'public/mission.html', {
+        'content_page': ContentPage.objects.filter(slug='mission-vision', is_published=True).first(),
         'page_title': 'Mission & Vision',
         'breadcrumb': [('Home', '/'), ('Who We Are', '#'), ('Mission & Vision', '')],
+    })
+
+
+def content_page(request, slug):
+    page = get_object_or_404(ContentPage, slug=slug, is_published=True)
+    return render(request, 'public/content_page.html', {
+        'content_page': page,
+        'page_title': page.title,
+        'breadcrumb': [('Home', '/'), (page.title, '')],
     })
 
 

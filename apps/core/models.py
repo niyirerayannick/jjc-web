@@ -222,3 +222,74 @@ class ContactInfo(models.Model):
 
     def __str__(self):
         return f'{self.label}: {self.value}'
+
+
+class ContentPage(models.Model):
+    """Editable long-form public page content."""
+    slug = models.SlugField(unique=True, max_length=100)
+    title = models.CharField(max_length=200)
+    eyebrow = models.CharField(max_length=100, blank=True)
+    summary = models.TextField(blank=True, max_length=600)
+    featured_image = models.ImageField(upload_to='content/', blank=True, null=True)
+    featured_image_alt = models.CharField(max_length=250, blank=True)
+    body = HTMLField(blank=True)
+    closing_statement = models.CharField(max_length=300, blank=True)
+    is_published = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['title']
+        verbose_name = 'Content Page'
+
+    def __str__(self):
+        return self.title
+
+
+class SiteStatistic(models.Model):
+    """Editable facts displayed on the homepage and About pages."""
+    key = models.SlugField(unique=True, max_length=80)
+    value = models.CharField(max_length=30)
+    label = models.CharField(max_length=120)
+    detail = models.CharField(max_length=250, blank=True)
+    order = models.PositiveIntegerField(default=0)
+    show_on_homepage = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['order', 'label']
+
+    def __str__(self):
+        return f'{self.value} — {self.label}'
+
+
+class TimelineMilestone(models.Model):
+    """A dated or present-day milestone in the choir's history."""
+    year = models.CharField(max_length=30)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['order', 'year']
+
+    def __str__(self):
+        return f'{self.year} — {self.title}'
+
+
+class MinistryArea(models.Model):
+    """Editable ministry cards used on the homepage and ministry pages."""
+    slug = models.SlugField(unique=True, max_length=100)
+    title = models.CharField(max_length=160)
+    summary = models.TextField(max_length=500)
+    body = HTMLField(blank=True)
+    link_url = models.CharField(max_length=300, blank=True)
+    order = models.PositiveIntegerField(default=0)
+    show_on_homepage = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['order', 'title']
+
+    def __str__(self):
+        return self.title

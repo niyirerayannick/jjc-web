@@ -58,6 +58,9 @@ urlpatterns = [
 
     # Settings
     path('settings/', views.site_settings, name='settings'),
+    path('content/', views.content_hub, name='content-hub'),
+    path('content/<str:kind>/new/', views.content_edit, name='content-create'),
+    path('content/<str:kind>/<int:pk>/edit/', views.content_edit, name='content-edit'),
 
     # Slider
     path('slider/', views.slider, name='slider'),

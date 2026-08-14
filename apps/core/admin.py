@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import SiteSettings, SliderSlide, MediaLibrary, CommitteeMember, Partner
+from .models import (
+    SiteSettings, SliderSlide, MediaLibrary, CommitteeMember, Partner,
+    ContentPage, SiteStatistic, TimelineMilestone, MinistryArea,
+)
 
 
 @admin.register(SiteSettings)
@@ -43,3 +46,27 @@ class CommitteeMemberAdmin(admin.ModelAdmin):
 class PartnerAdmin(admin.ModelAdmin):
     list_display = ('name', 'partner_type', 'order', 'is_active')
     list_editable = ('order', 'is_active')
+
+
+@admin.register(ContentPage)
+class ContentPageAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slug', 'is_published', 'updated_at')
+    list_editable = ('is_published',)
+
+
+@admin.register(SiteStatistic)
+class SiteStatisticAdmin(admin.ModelAdmin):
+    list_display = ('value', 'label', 'order', 'show_on_homepage', 'is_active')
+    list_editable = ('order', 'show_on_homepage', 'is_active')
+
+
+@admin.register(TimelineMilestone)
+class TimelineMilestoneAdmin(admin.ModelAdmin):
+    list_display = ('year', 'title', 'order', 'is_active')
+    list_editable = ('order', 'is_active')
+
+
+@admin.register(MinistryArea)
+class MinistryAreaAdmin(admin.ModelAdmin):
+    list_display = ('title', 'order', 'show_on_homepage', 'is_active')
+    list_editable = ('order', 'show_on_homepage', 'is_active')

@@ -19,7 +19,10 @@ from datetime import datetime, date, time, timedelta
 from decimal import Decimal
 
 # Import all models
-from apps.core.models import SiteSettings, SliderSlide, Partner
+from apps.core.models import (
+    SiteSettings, SliderSlide, Partner, ContentPage, SiteStatistic,
+    TimelineMilestone, MinistryArea,
+)
 from apps.music.models import Album, Song
 from apps.cms.models import Category, Article
 from apps.events.models import EventType, Event
@@ -63,13 +66,14 @@ class Command(BaseCommand):
             self.seed_sponsor_groups()
             self.seed_hero_slides()
             self.seed_partners()
+            self.seed_authoritative_content()
 
             self.stdout.write(self.style.SUCCESS('\n' + '='*70))
-            self.stdout.write(self.style.SUCCESS('✓ Seeding completed successfully!'))
+            self.stdout.write(self.style.SUCCESS('Seeding completed successfully!'))
             self.stdout.write(self.style.SUCCESS('='*70 + '\n'))
 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'\n✗ Error during seeding: {str(e)}'))
+            self.stdout.write(self.style.ERROR(f'\nError during seeding: {str(e)}'))
             raise CommandError(str(e))
 
     def clear_all_data(self):
@@ -88,8 +92,12 @@ class Command(BaseCommand):
         GalleryAlbum.objects.all().delete()
         SponsorGroup.objects.all().delete()
         Partner.objects.all().delete()
+        ContentPage.objects.all().delete()
+        SiteStatistic.objects.all().delete()
+        TimelineMilestone.objects.all().delete()
+        MinistryArea.objects.all().delete()
         
-        self.stdout.write(self.style.WARNING('✓ Data cleared'))
+        self.stdout.write(self.style.WARNING('Data cleared'))
 
     def get_admin_user(self):
         """Get or create admin user"""
@@ -159,13 +167,13 @@ when the university was located at Saint Paul. The choir originated from a small
 born-again ULK students associated with CEP (Pentecostal students' congregation).</p>
 
 <h3>The Foundation</h3>
-<p>What started as approximately 15 students gathering during breaks to pray and praise God 
-soon became a recognized and vibrant music ministry within the university community. These young 
+<p>What started with six evening-program students gathering to pray and praise God 
+soon became a growing music ministry within the university community. These young 
 believers shared a passion for worshipping God and spreading the gospel through music.</p>
 
-<h3>Official Formation: June 25, 2005</h3>
-<p>The worship team was formally recognized and officially named "Jehovah Jireh Choir" on 
-June 25, 2005. The name is rooted in <strong>Genesis 22:14</strong>, meaning 
+<h3>The Name Jehovah Jireh: 2005</h3>
+<p>The worship team adopted the name "Jehovah Jireh Choir" in 2005. 
+The name is rooted in <strong>Genesis 22:5–15</strong>, meaning 
 <strong>"The Lord Will Provide"</strong> – a testament to God's provision and faithfulness 
 in all circumstances.</p>
 
@@ -198,7 +206,7 @@ community ministry, the choir remains committed to:</p>
 <p><em>Jehovah Jireh – The Lord Provides. He provides vision, voice, and victory to those who believe.</em></p>'''
         
         settings.save()
-        self.stdout.write(self.style.SUCCESS('  ✓ Site settings updated with mission, vision, and about'))
+        self.stdout.write(self.style.SUCCESS('  Site settings updated with mission, vision, and about'))
 
     def seed_categories(self):
         """Seed article categories"""
@@ -224,7 +232,7 @@ community ministry, the choir remains committed to:</p>
             if created:
                 self.stdout.write(f"    Created: {category.name}")
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {len(categories_data)} categories ready'))
+        self.stdout.write(self.style.SUCCESS(f'  {len(categories_data)} categories ready'))
 
     def seed_albums(self):
         """Seed historical albums"""
@@ -277,7 +285,7 @@ community ministry, the choir remains committed to:</p>
             if created:
                 self.stdout.write(f"    Created: {album.title} ({album.year})")
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {len(albums_data)} albums ready'))
+        self.stdout.write(self.style.SUCCESS(f'  {len(albums_data)} albums ready'))
 
     def seed_songs(self):
         """Seed known songs"""
@@ -338,7 +346,7 @@ community ministry, the choir remains committed to:</p>
                 self.stdout.write(f"    Created: {song.title}")
                 song_count += 1
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {song_count} new songs created'))
+        self.stdout.write(self.style.SUCCESS(f'  {song_count} new songs created'))
 
     def seed_articles(self, author):
         """Seed news and articles"""
@@ -394,10 +402,10 @@ community ministry, the choir remains committed to:</p>
 <p>Jehovah Jireh Choir began its worship ministry at Kigali Independent University (ULK) when the university was operating at Saint Paul. The choir originated from a small group of born-again ULK students associated with CEP (Pentecostal students' congregation).</p>
 
 <p><strong>The Foundation: A Small Group</strong></p>
-<p>The group reportedly started with approximately 15 students who met during breaks to pray and praise God. What began as an informal gathering of young believers soon became a recognized music ministry within the university community.</p>
+<p>The group started with six evening-program students who gathered to pray, worship, and serve God. What began as a very small gathering grew into a music ministry within the university community.</p>
 
-<p><strong>Official Formation: June 25, 2005</strong></p>
-<p>The worship team was formally recognized and officially named "Jehovah Jireh Choir" on June 25, 2005. The name is rooted in Genesis 22:14, meaning "The Lord Will Provide" – a testament to God's provision and faithfulness in all circumstances.</p>
+<p><strong>The Name Jehovah Jireh: 2005</strong></p>
+<p>The group adopted the name "Jehovah Jireh Choir" in 2005. The name is rooted in Genesis 22:5–15 and expresses faith in God's provision and direction.</p>
 
 <p><strong>Growth and Development</strong></p>
 <p>Over the years, the choir expanded significantly, moving beyond the university to serve churches, communities, and districts across Rwanda. The ministry recorded and released multiple albums featuring songs in Kinyarwanda and English, each carrying spiritual themes and messages of faith transformation.</p>
@@ -437,7 +445,7 @@ community ministry, the choir remains committed to:</p>
                 self.stdout.write(f"    Created: {article.title[:60]}...")
                 article_count += 1
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {article_count} new articles created'))
+        self.stdout.write(self.style.SUCCESS(f'  {article_count} new articles created'))
 
     def seed_event_types(self):
         """Seed event types"""
@@ -458,7 +466,7 @@ community ministry, the choir remains committed to:</p>
             if created:
                 self.stdout.write(f"    Created: {event_type.name}")
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {len(types_data)} event types ready'))
+        self.stdout.write(self.style.SUCCESS(f'  {len(types_data)} event types ready'))
 
     def seed_events(self):
         """Seed historical and upcoming events"""
@@ -503,51 +511,8 @@ community ministry, the choir remains committed to:</p>
                 'description': 'Choir ministry at ADEPR Bukane in Musanze.',
                 'youtube_livestream_url': '',
             },
-            # Upcoming events with YouTube livestream URLs
-            {
-                'title': 'Saturday Evening Worship Service',
-                'slug': 'worship-service-september-2026',
-                'event_type': worship_type,
-                'location': 'Kigali',
-                'venue': 'Jehovah Jireh Worship Center',
-                'start_date': today.replace(day=14),  # Next Saturday
-                'start_time': time(18, 30),
-                'status': 'upcoming',
-                'description': 'Join us for an evening of spirit-filled worship with Jehovah Jireh Choir. Experience the presence of God through music and prayer.',
-                'short_description': 'Evening worship celebration with live streaming available.',
-                'youtube_livestream_url': 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                'registration_url': '',
-            },
-            {
-                'title': 'Kigali Worship Celebration 2026',
-                'slug': 'kigali-worship-celebration-2026',
-                'event_type': concert_type,
-                'location': 'Kigali',
-                'venue': 'Kigali Convention Center',
-                'start_date': today.replace(month=today.month+1 if today.month < 12 else 1, day=15),
-                'start_time': time(19, 0),
-                'status': 'upcoming',
-                'description': 'A major concert event featuring Jehovah Jireh Choir and special guest artists. Join thousands in celebration of God\'s faithfulness.',
-                'short_description': 'Major concert celebration with live YouTube streaming.',
-                'youtube_livestream_url': 'https://www.youtube.com/channel/UCjzXQ0GyYXXV0XoFCiHMfPw',
-                'registration_url': '',
-                'ticket_price': 'Free - Donations Welcome',
-            },
-            {
-                'title': 'Mountain Top Evangelization Outreach',
-                'slug': 'mountain-top-evangelization-2026',
-                'event_type': evangelization_type,
-                'location': 'Musanze',
-                'start_date': today.replace(month=today.month+1 if today.month < 12 else 1, day=22),
-                'start_time': time(14, 0),
-                'status': 'upcoming',
-                'description': 'Jehovah Jireh Choir will conduct an evangelization outreach in the Musanze area, sharing the Gospel through music and testimony.',
-                'short_description': 'Community evangelization with live stream updates.',
-                'youtube_livestream_url': 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
-                'registration_url': '',
-            },
         ]
-        
+
         event_count = 0
         for event_data in events_data:
             event, created = Event.objects.update_or_create(
@@ -571,7 +536,7 @@ community ministry, the choir remains committed to:</p>
                 self.stdout.write(f"    Created: {event.title}")
                 event_count += 1
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {event_count} new events created'))
+        self.stdout.write(self.style.SUCCESS(f'  {event_count} new events created'))
 
     def seed_evangelization_reports(self):
         """Seed evangelization reports"""
@@ -620,7 +585,7 @@ community ministry, the choir remains committed to:</p>
                 self.stdout.write(f"    Created: {report.title}")
                 report_count += 1
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {report_count} new evangelization reports created'))
+        self.stdout.write(self.style.SUCCESS(f'  {report_count} new evangelization reports created'))
 
     def seed_gallery(self):
         """Seed gallery albums (without media for now - media requires file uploads)"""
@@ -658,7 +623,7 @@ community ministry, the choir remains committed to:</p>
                 self.stdout.write(f"    Created album: {album.name}")
                 album_count += 1
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {album_count} gallery albums created (media can be added via admin dashboard)'))
+        self.stdout.write(self.style.SUCCESS(f'  {album_count} gallery albums created (media can be added via admin dashboard)'))
 
     def seed_sponsor_groups(self):
         """Seed sponsor group tiers"""
@@ -701,7 +666,7 @@ community ministry, the choir remains committed to:</p>
             if created:
                 self.stdout.write(f"    Created: {group.name}")
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {len(groups_data)} sponsor groups ready'))
+        self.stdout.write(self.style.SUCCESS(f'  {len(groups_data)} sponsor groups ready'))
 
     def seed_hero_slides(self):
         """Seed homepage hero slider"""
@@ -741,7 +706,7 @@ community ministry, the choir remains committed to:</p>
                 'order': 3,
                 'heading': 'GOSPEL MUSIC\nWITH A MESSAGE',
                 'highlighted_text': 'WITH A MESSAGE',
-                'description': 'Four decades of albums featuring spirit-filled songs of worship, faith, and transformation.',
+                'description': 'More than 80 original songs, four completed albums, and a fifth album in development.',
                 'button_1_text': 'EXPLORE OUR SONGS',
                 'button_1_url': '/music/albums/',
                 'button_2_text': 'LATEST ALBUM',
@@ -790,7 +755,150 @@ community ministry, the choir remains committed to:</p>
                 self.stdout.write(f"    Created: Slide {slide.order} - {slide.title}")
                 slide_count += 1
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {slide_count} new hero slides created'))
+        self.stdout.write(self.style.SUCCESS(f'  {slide_count} new hero slides created'))
+
+    def seed_authoritative_content(self):
+        """Apply the supplied choir-history facts over older generated copy."""
+        self.stdout.write('Seeding authoritative history and ministry content...')
+
+        pages = {
+            'home': {
+                'title': 'Jehovah Jireh Choir', 'eyebrow': 'Who We Are',
+                'summary': 'Jehovah Jireh began at ULK in 1998 as a small student worship ministry and has grown into a multigenerational Gospel ministry focused on worship, evangelization, music, service, and preparing future generations.',
+                'featured_image': 'slider/choir-hero-01-desktop.jpg',
+                'featured_image_alt': 'Jehovah Jireh Choir singing together during worship',
+                'body': '<p>For Jehovah Jireh, singing is not simply performance. It is a means of serving God, proclaiming the Gospel, and serving people.</p>',
+            },
+            'about': {
+                'title': 'About Jehovah Jireh Choir', 'eyebrow': 'Who We Are',
+                'summary': 'A multigenerational Gospel ministry born at Kigali Independent University (ULK) in 1998.',
+                'body': '''<h2>Worship, Gospel and Service</h2><p>Jehovah Jireh began with six evening-program students who belonged to Groupe de Prière des Étudiants Pentecôtistes Universitaires (GPEPU), later known as CEP — Communautés des Étudiants Pentecôtistes. They were committed to prayer, worship, and service to God despite very limited resources.</p><p>For Jehovah Jireh, singing is not simply performance. It is a way to serve God, proclaim the Gospel, and serve people. Today the ministry brings together more than 160 singers across generations, has composed more than 80 original songs, completed four albums, and is preparing a fifth.</p><h2>Jehovah Jireh Today</h2><p>The choir remains focused on worship, evangelization, composing and singing Gospel music, helping vulnerable people, developing young people in ministry, and pursuing spiritual, musical, administrative, and organizational growth.</p><h2>Generational Pathway</h2><p><strong>Jehovah Jireh Academy → Jehovah Jireh Junior → Jehovah Jireh ULK → Jehovah Jireh ULK Post Cepiens</strong></p><p>This pathway supports continuity, mentorship, and the passing on of the ministry from one generation to another.</p>''',
+            },
+            'history': {
+                'title': 'Our History', 'eyebrow': 'A Journey of Faith Since 1998',
+                'summary': 'From six ULK students committed to prayer and worship to a ministry serving across generations.',
+                'body': '''<h2>Our Beginnings — 1998</h2><p>Jehovah Jireh began its ministry at Kigali Independent University (ULK) in 1998. Six students in the evening program, members of Groupe de Prière des Étudiants Pentecôtistes Universitaires (GPEPU), gathered for prayer, worship, and service to God. GPEPU later became CEP — Communautés des Étudiants Pentecôtistes.</p><p>Professeur DUSHIMIRIMANA Jean de Dieu was the first leader of the singers, while GPEPU was led at the time by KAREMERA Fiston.</p><h2>The Early Years</h2><p>The group faced very few singers, limited musical capacity, a lack of confidence, and the departure of members after university. At one point only four members remained. They persevered in prayer, asking God to grow and sustain the ministry.</p><h2>The “Ibyihare / Ikihare” Period</h2><p>During this difficult period the group informally called itself Ibyihare or Ikihare, reflecting its perseverance and persistence.</p><h2>The Kimicanga Story</h2><p>Kimicanga holds an important place in the choir’s early journey and is remembered as part of the setting in which the young ministry continued to develop.</p><h2>Beginning to Compose Original Songs</h2><p>At first the group sang songs by other artists and choirs. Later, Jacques NTAKIRA began composing songs for the group, opening a new chapter in its musical identity.</p><h2>How Our Name Was Born</h2><p>In 2005, CEP ULK Soir leadership—including Pastor BUDIGIRI Herman and KAMPAYANA Jean de Dieu—considered giving the growing group a distinct choir name. Several names were written and discussed, including JEHOVAH JIREH. Senior members were consulted, and Prof. DUSHIMIRIMANA Jean de Dieu selected the name JEHOVAH JIREH.</p><h2>What Jehovah Jireh Means</h2><p>Rooted in Genesis 22:5–15, Jehovah Jireh proclaims that God provides and makes provision. The name became a testimony, an expression of faith, and confidence that God would provide direction and everything needed for the ministry.</p><blockquote><p>“Uwiteka ni we uzatanga icyerekezo cyiza.”</p></blockquote><h2>Passing the Ministry to Future Generations</h2><p>Graduates remain connected, sharing mentorship, testimonies, knowledge, and support. This structured approach to continuity helps preserve the ministry and pass it faithfully to future generations.</p>''',
+            },
+            'mission-vision': {
+                'title': 'Mission & Vision', 'eyebrow': 'Serving God and People',
+                'summary': 'Singing is a means of serving God, proclaiming the Gospel, and serving people.',
+                'body': '<h2>Our Mission</h2><p>To worship and serve God, proclaim the Gospel through music and evangelization, and serve people through compassionate ministry.</p><h2>Our Vision</h2><p>To nurture a spiritually grounded and musically growing ministry that carries Jehovah Jireh’s faith, history, and values faithfully from one generation to the next.</p><h2>Our Commitment</h2><p>We pursue spiritual growth, musical growth, responsible administration and management, development, and evangelization in Rwanda and beyond.</p>',
+                'closing_statement': 'JEHOVAH JIREH — UWITEKA AZITANGIRA.',
+            },
+            'academy': {
+                'title': 'Jehovah Jireh Academy', 'eyebrow': 'Preparing Future Generations',
+                'summary': 'A pillar for preserving the ministry by forming children in worship, music, service, values, history, and heritage.',
+                'body': '<h2>Learning the Ministry from an Early Age</h2><p>Jehovah Jireh Academy prepares future generations, particularly children of parents who have been part of Jehovah Jireh. Children are introduced to singing, music, worship, serving God, Jehovah Jireh values, the choir’s history, and its ministry heritage.</p><p>The Academy helps ensure that faith, knowledge, values, and service are passed forward with care.</p>',
+            },
+            'legacy': {
+                'title': 'Our Legacy', 'eyebrow': 'Faith Across Generations',
+                'summary': 'A journey from six founding students—and once only four remaining—to more than 160 singers today.',
+                'body': '<p>Jehovah Jireh’s legacy includes more than 80 original songs, four completed albums, a fifth album in development, evangelization in Rwanda and abroad, more than seven leadership committees, and the recurring Imana Iratsinze event.</p><p>The Academy, Junior, ULK, and Post Cepiens structures help graduates and younger members remain connected through mentorship, testimony, knowledge, support, and service.</p>',
+            },
+            'future': {
+                'title': 'Our Future', 'eyebrow': 'Passing the Ministry Forward',
+                'summary': 'Preparing children and young people to carry the ministry’s faith, history, values, and service into the future.',
+                'body': '<p>The future vision emphasizes Jehovah Jireh Academy, teaching children from an early age, preserving the choir’s history and values, and transferring the ministry responsibly from one generation to another.</p><p>Through worship, training, mentorship, and service, Jehovah Jireh seeks to ensure that the ministry continues long into the future.</p>',
+                'closing_statement': 'JEHOVAH JIREH — UWITEKA AZITANGIRA.',
+            },
+            'evangelization': {
+                'title': 'Evangelization & Community Ministry', 'eyebrow': 'The Gospel Beyond the Stage',
+                'summary': 'Serving through evangelization, hospital visits, prison ministry, and compassionate community outreach.',
+                'body': '<p>Jehovah Jireh has carried out evangelization in Rwanda and outside Rwanda, including a documented ministry trip to Ngozi, Burundi.</p><p>The ministry has also included visiting patients in hospitals, taking the Gospel to prisons and correctional facilities, helping people facing different difficulties, supporting community and social-welfare activities, and walking with people through different life situations.</p><p>Singing is not simply performance; it is a means of serving God, proclaiming the Gospel, and serving people.</p>',
+            },
+            'imana-iratsinze': {
+                'title': 'IMANA IRATSINZE', 'eyebrow': 'Annual Worship Gathering',
+                'summary': 'A recurring Jehovah Jireh event centered on worship, praise, testimonies, and Gospel proclamation.',
+                'body': '<p>IMANA IRATSINZE brings together Christians, artists, choirs, friends, and supporters of God’s ministry for worship, praise, testimonies, and proclamation of the Gospel.</p><p>Future and previous editions may include confirmed photos, videos, livestreams, and guest artists or choirs as those records become available.</p>',
+            },
+        }
+        for slug, defaults in pages.items():
+            ContentPage.objects.update_or_create(slug=slug, defaults={**defaults, 'is_published': True})
+
+        statistics = [
+            ('founded', '1998', 'Ministry Began', 'At ULK with six evening-program students'),
+            ('members', '160+', 'Choir Members', 'Singers across generations'),
+            ('songs', '80+', 'Original Songs', 'Composed by the ministry'),
+            ('albums', '4', 'Released Albums', 'Completed albums'),
+            ('leadership-generations', '7+', 'Leadership Generations', 'Committees over the years'),
+        ]
+        SiteStatistic.objects.filter(key='album-production').delete()
+        for order, (key, value, label, detail) in enumerate(statistics, 1):
+            SiteStatistic.objects.update_or_create(key=key, defaults={
+                'value': value, 'label': label, 'detail': detail, 'order': order,
+                'show_on_homepage': key != 'leadership-generations', 'is_active': True,
+            })
+
+        milestones = [
+            ('1998', 'Ministry begins at ULK', 'Six evening-program students begin gathering for prayer, worship, and service through GPEPU.'),
+            ('2000', 'GPEPU becomes CEP', 'The university Pentecostal student prayer community becomes known as CEP.'),
+            ('2005', 'The name Jehovah Jireh is adopted', 'After considering several names and consulting senior members, the group adopts Jehovah Jireh.'),
+            ('2010', 'Umucyo Gospel Award', 'At Mbambino Super City in Kabuga, the choir places fourth and receives a certificate in the Radio Umucyo-organized award.'),
+            ('2012', 'Post Cepiens continuity strengthened', 'More than 30 choir members graduate from ULK and continue through Jehovah Jireh ULK Post Cepiens while the school-based group continues.'),
+            ('Today', 'A multigenerational ministry', 'More than 160 singers, 80+ original songs, four completed albums, and a fifth album in development.'),
+        ]
+        for order, (year, title, description) in enumerate(milestones, 1):
+            TimelineMilestone.objects.update_or_create(year=year, defaults={
+                'title': title, 'description': description, 'order': order, 'is_active': True,
+            })
+
+        ministry_areas = [
+            ('worship-music', 'Worship & Music', 'Serving God and proclaiming the Gospel through worship, singing, and original Gospel music.', '/music/albums/'),
+            ('evangelization', 'Evangelization', 'Sharing the Gospel in Rwanda and abroad, including the documented ministry journey to Ngozi, Burundi.', '/ministry/evangelization/'),
+            ('community-service', 'Community Service', 'Hospital ministry, prison and correctional outreach, and help for people facing difficult circumstances.', '/ministry/evangelization/'),
+            ('events', 'Events', 'Gatherings for worship, praise, testimony, fellowship, and Gospel proclamation.', '/events/'),
+            ('generational-ministry', 'Generational Ministry', 'Academy, Junior, ULK, and Post Cepiens carrying the ministry forward through mentorship and service.', '/about/academy/'),
+            ('support', 'Support Our Mission', 'Partner with worship, evangelization, community service, and formation of future generations.', '/sponsors/become-a-sponsor/'),
+        ]
+        for order, (slug, title, summary, link_url) in enumerate(ministry_areas, 1):
+            MinistryArea.objects.update_or_create(slug=slug, defaults={
+                'title': title, 'summary': summary, 'link_url': link_url,
+                'order': order, 'show_on_homepage': True, 'is_active': True,
+            })
+
+        slides = [
+            ('Worship & Mission', 'WE WORSHIP. WE EVANGELIZE.', 'WE SERVE GOD AND PEOPLE.', 'For Jehovah Jireh, singing is a means of serving God, proclaiming the Gospel, and serving people.', 'DISCOVER OUR MINISTRY', '/ministry/evangelization/'),
+            ('Our Story', 'A JOURNEY OF FAITH', 'SINCE 1998', 'From six ULK students committed to prayer and worship to a ministry serving across generations.', 'READ OUR STORY', '/history/'),
+            ('Music', 'MORE THAN 80 SONGS', 'OF FAITH', 'A growing Gospel music legacy with four completed albums and a fifth in development.', 'EXPLORE OUR MUSIC', '/music/albums/'),
+            ('Evangelization', 'THE GOSPEL', 'BEYOND THE STAGE', 'Serving through evangelization, hospital visits, prison ministry, and community outreach.', 'OUR MINISTRY', '/ministry/evangelization/'),
+            ('Legacy', 'BUILDING THE', 'NEXT GENERATION', 'From Jehovah Jireh Academy to Junior, ULK and Post Cepiens, the ministry is being passed forward.', 'DISCOVER OUR LEGACY', '/about/legacy/'),
+        ]
+        for order, (title, heading, highlighted, description, button, url) in enumerate(slides, 1):
+            SliderSlide.objects.update_or_create(order=order, defaults={
+                'title': title, 'heading': heading, 'highlighted_text': highlighted,
+                'description': description, 'button_1_text': button, 'button_1_url': url,
+                'button_2_text': '', 'button_2_url': '', 'text_align': 'left',
+                'is_active': True, 'is_featured': True,
+            })
+
+        imana_type, _ = EventType.objects.update_or_create(
+            slug='imana-iratsinze', defaults={
+                'name': 'Imana Iratsinze', 'icon': 'celebration',
+                'color': '#DCA928', 'is_active': True,
+            }
+        )
+        Event.objects.filter(slug__icontains='imana-iratsinze').update(event_type=imana_type)
+
+        Event.objects.filter(slug__in=[
+            'worship-service-september-2026', 'kigali-worship-celebration-2026',
+            'mountain-top-evangelization-2026',
+        ]).delete()
+
+        history_article = Article.objects.filter(slug='about-jehovah-jireh-choir-history').first()
+        if history_article:
+            history_article.excerpt = 'The documented journey from six ULK students in 1998 to a multigenerational Gospel ministry.'
+            history_article.content = ContentPage.objects.get(slug='history').body
+            history_article.save()
+
+        settings = SiteSettings.get_settings()
+        settings.about = ContentPage.objects.get(slug='about').body
+        settings.mission = ContentPage.objects.get(slug='mission-vision').body
+        settings.vision = '<p>To preserve and pass on Jehovah Jireh’s ministry, faith, history, and values from one generation to another.</p>'
+        settings.tagline = 'We Worship. We Evangelize. We Serve God and People.'
+        settings.footer_text = 'Jehovah Jireh is a multigenerational Gospel ministry serving God and people through worship, evangelization, music, and compassionate outreach since 1998.'
+        settings.save()
+
+        self.stdout.write(self.style.SUCCESS('  Authoritative content updated'))
 
     def seed_partners(self):
         """Seed ministry partners"""
@@ -824,4 +932,4 @@ community ministry, the choir remains committed to:</p>
                 self.stdout.write(f"    Created: {partner.name}")
                 partner_count += 1
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {partner_count} new partners created'))
+        self.stdout.write(self.style.SUCCESS(f'  {partner_count} new partners created'))

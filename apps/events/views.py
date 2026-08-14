@@ -33,6 +33,17 @@ def event_list(request):
     })
 
 
+def imana_iratsinze(request):
+    from apps.core.models import ContentPage
+    page = get_object_or_404(ContentPage, slug='imana-iratsinze', is_published=True)
+    editions = Event.objects.filter(event_type__slug='imana-iratsinze').order_by('-start_date')
+    return render(request, 'events/event_series.html', {
+        'content_page': page,
+        'events': editions,
+        'page_title': page.title,
+    })
+
+
 def event_detail(request, slug):
     event = get_object_or_404(Event, slug=slug)
     related = Event.objects.filter(

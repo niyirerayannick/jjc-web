@@ -1,0 +1,10 @@
+{% extends 'dashboard/base.html' %}
+{% block dashboard_content %}
+<form method="post" enctype="multipart/form-data" class="bg-white rounded-xl shadow-sm p-6 max-w-4xl space-y-5">
+  {% csrf_token %}
+  {% for field in form %}
+  <div><label class="block text-sm font-semibold mb-1">{{ field.label }}</label>{{ field }}{% if field.help_text %}<p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>{% endif %}{% for error in field.errors %}<p class="text-red-600 text-sm">{{ error }}</p>{% endfor %}</div>
+  {% endfor %}
+  <div class="flex gap-3"><button class="bg-blue-primary text-white px-5 py-2 rounded-lg">Save</button><a href="{% url 'dashboard:content-hub' %}" class="px-5 py-2">Cancel</a></div>
+</form>
+{% endblock %}

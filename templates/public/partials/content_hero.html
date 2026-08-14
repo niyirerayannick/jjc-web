@@ -1,0 +1,5 @@
+<div class="bg-hero-gradient pt-32 pb-20">
+    <div class="max-w-4xl mx-auto px-6 text-center">{% if content_page.eyebrow %}<div class="eyebrow justify-center mb-4 text-gold">
+        <span>{{ content_page.eyebrow }}</span>
+    </div>{% endif %}<h1 class="text-4xl lg:text-5xl font-serif font-bold text-white mb-4">{{ content_page.title|default:page_title }}</h1>{% if content_page.summary %}<p class="text-white/75 text-lg max-w-3xl mx-auto">{{ content_page.summary }}</p>{% endif %}</div>
+</div>

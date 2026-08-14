@@ -630,6 +630,47 @@ def site_settings(request):
     })
 
 
+@dashboard_required
+def content_hub(request):
+    from apps.core.models import ContentPage, MinistryArea, SiteStatistic, TimelineMilestone
+    return render(request, 'dashboard/content/hub.html', {
+        'pages': ContentPage.objects.all(),
+        'statistics': SiteStatistic.objects.all(),
+        'milestones': TimelineMilestone.objects.all(),
+        'ministry_areas': MinistryArea.objects.all(),
+        'page_title': 'Website Content',
+        'active_nav': 'content',
+    })
+
+
+@dashboard_required
+def content_edit(request, kind, pk=None):
+    from apps.core.models import ContentPage, MinistryArea, SiteStatistic, TimelineMilestone
+    from .forms import ContentPageForm, MinistryAreaForm, SiteStatisticForm, TimelineMilestoneForm
+
+    registry = {
+        'page': (ContentPage, ContentPageForm, 'Page'),
+        'statistic': (SiteStatistic, SiteStatisticForm, 'Statistic'),
+        'milestone': (TimelineMilestone, TimelineMilestoneForm, 'Timeline milestone'),
+        'ministry': (MinistryArea, MinistryAreaForm, 'Ministry area'),
+    }
+    if kind not in registry:
+        from django.http import Http404
+        raise Http404
+    model, form_class, label = registry[kind]
+    instance = get_object_or_404(model, pk=pk) if pk else None
+    form = form_class(request.POST or None, request.FILES or None, instance=instance)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, f'{label} saved successfully.')
+        return redirect('dashboard:content-hub')
+    return render(request, 'dashboard/content/form.html', {
+        'form': form,
+        'page_title': f'Edit {label}' if instance else f'New {label}',
+        'active_nav': 'content',
+    })
+
+
 # ─── Slider ────────────────────────────────────────────────────────────────────
 
 @dashboard_required

@@ -39,11 +39,14 @@ def share_testimony(request):
 
 
 def evangelization(request):
+    from apps.core.models import ContentPage, MinistryArea
     reports = EvangelizationReport.objects.filter(is_published=True).order_by('-event_date')
     paginator = Paginator(reports, 9)
     page = paginator.get_page(request.GET.get('page'))
     return render(request, 'ministry/evangelization.html', {
         'reports': page,
+        'content_page': ContentPage.objects.filter(slug='evangelization', is_published=True).first(),
+        'ministry_areas': MinistryArea.objects.filter(is_active=True),
         'page_title': 'Evangelization',
         'breadcrumb': [('Home', '/'), ('Ministry', '#'), ('Evangelization', '')],
     })

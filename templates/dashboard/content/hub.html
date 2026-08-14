@@ -1,0 +1,22 @@
+{% extends 'dashboard/base.html' %}
+{% block dashboard_content %}
+<div class="space-y-8">
+  {% for heading, kind, items in content_groups %}{% endfor %}
+  <section class="bg-white rounded-xl shadow-sm p-6">
+    <div class="flex justify-between mb-4"><h2 class="text-xl font-bold text-navy">Public Pages</h2><a class="text-blue-primary" href="{% url 'dashboard:content-create' 'page' %}">New page</a></div>
+    {% for item in pages %}<a class="block py-2 border-t hover:text-blue-primary" href="{% url 'dashboard:content-edit' 'page' item.pk %}">{{ item.title }} <span class="text-gray-400">/{{ item.slug }}/</span></a>{% endfor %}
+  </section>
+  <section class="bg-white rounded-xl shadow-sm p-6">
+    <div class="flex justify-between mb-4"><h2 class="text-xl font-bold text-navy">Homepage Statistics</h2><a class="text-blue-primary" href="{% url 'dashboard:content-create' 'statistic' %}">New statistic</a></div>
+    {% for item in statistics %}<a class="block py-2 border-t hover:text-blue-primary" href="{% url 'dashboard:content-edit' 'statistic' item.pk %}"><strong>{{ item.value }}</strong> — {{ item.label }}</a>{% endfor %}
+  </section>
+  <section class="bg-white rounded-xl shadow-sm p-6">
+    <div class="flex justify-between mb-4"><h2 class="text-xl font-bold text-navy">History Timeline</h2><a class="text-blue-primary" href="{% url 'dashboard:content-create' 'milestone' %}">New milestone</a></div>
+    {% for item in milestones %}<a class="block py-2 border-t hover:text-blue-primary" href="{% url 'dashboard:content-edit' 'milestone' item.pk %}"><strong>{{ item.year }}</strong> — {{ item.title }}</a>{% endfor %}
+  </section>
+  <section class="bg-white rounded-xl shadow-sm p-6">
+    <div class="flex justify-between mb-4"><h2 class="text-xl font-bold text-navy">Ministry Areas</h2><a class="text-blue-primary" href="{% url 'dashboard:content-create' 'ministry' %}">New ministry area</a></div>
+    {% for item in ministry_areas %}<a class="block py-2 border-t hover:text-blue-primary" href="{% url 'dashboard:content-edit' 'ministry' item.pk %}">{{ item.title }}</a>{% endfor %}
+  </section>
+</div>
+{% endblock %}
