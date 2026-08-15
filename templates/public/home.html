@@ -240,27 +240,31 @@ function heroSlider() {
 {% endif %}
 
 {# ═══════════════════════════════════ 5. MINISTRY HIGHLIGHTS ════════ #}
-{% if homepage_page or site_statistics %}
 <section class="py-14 bg-white">
   <div class="max-w-[1200px] mx-auto px-6">
-    {% if homepage_page %}
     <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-12">
       <div class="text-left">
-        <div class="eyebrow mb-3"><span>{{ homepage_page.eyebrow }}</span></div>
+        <div class="eyebrow mb-3"><span>Who We Are</span></div>
         <h2 class="text-3xl lg:text-4xl font-serif font-bold text-navy">A Multigenerational Gospel Ministry</h2>
-        <p class="text-gray-600 mt-5 text-lg leading-relaxed">{{ homepage_page.summary }}</p>
-        {% if site_statistics %}
+        <p class="text-gray-600 mt-5 text-lg leading-relaxed">Jehovah Jireh began at ULK in 1998 as a small student worship ministry and has grown into a multigenerational Gospel ministry focused on worship, evangelization, music, service, and preparing future generations.</p>
         <div class="grid grid-cols-4 gap-2 sm:gap-3 mt-8">
-          {% for stat in site_statistics %}
-          <div class="reveal min-w-0 rounded-xl bg-offwhite px-2 py-4 sm:p-4 text-center border border-gray-100 hover:-translate-y-1 hover:shadow-md hover:border-gold/30 transition-all duration-300" style="transition-delay: {{ forloop.counter0 }}00ms">
-            <div class="text-2xl lg:text-3xl font-bold text-gold">
-              <span data-counter data-target="{% if stat.key == 'founded' %}1998{% elif stat.key == 'members' %}160{% elif stat.key == 'songs' %}80{% else %}{{ stat.value }}{% endif %}" data-duration="1400">0</span>{% if stat.key == 'members' or stat.key == 'songs' %}+{% endif %}
-            </div>
-            <div class="text-navy text-[10px] sm:text-xs font-semibold mt-1.5 leading-tight">{{ stat.label }}</div>
+          <div class="reveal min-w-0 rounded-xl bg-offwhite px-2 py-4 sm:p-4 text-center border border-gray-100 hover:-translate-y-1 hover:shadow-md hover:border-gold/30 transition-all duration-300">
+            <div class="text-2xl lg:text-3xl font-bold text-gold"><span data-counter data-target="1998" data-duration="1400">0</span></div>
+            <div class="text-navy text-[10px] sm:text-xs font-semibold mt-1.5 leading-tight">Ministry Began</div>
           </div>
-          {% endfor %}
+          <div class="reveal min-w-0 rounded-xl bg-offwhite px-2 py-4 sm:p-4 text-center border border-gray-100 hover:-translate-y-1 hover:shadow-md hover:border-gold/30 transition-all duration-300" style="transition-delay: 100ms">
+            <div class="text-2xl lg:text-3xl font-bold text-gold"><span data-counter data-target="160" data-duration="1400">0</span>+</div>
+            <div class="text-navy text-[10px] sm:text-xs font-semibold mt-1.5 leading-tight">Choir Members</div>
+          </div>
+          <div class="reveal min-w-0 rounded-xl bg-offwhite px-2 py-4 sm:p-4 text-center border border-gray-100 hover:-translate-y-1 hover:shadow-md hover:border-gold/30 transition-all duration-300" style="transition-delay: 200ms">
+            <div class="text-2xl lg:text-3xl font-bold text-gold"><span data-counter data-target="80" data-duration="1400">0</span>+</div>
+            <div class="text-navy text-[10px] sm:text-xs font-semibold mt-1.5 leading-tight">Original Songs</div>
+          </div>
+          <div class="reveal min-w-0 rounded-xl bg-offwhite px-2 py-4 sm:p-4 text-center border border-gray-100 hover:-translate-y-1 hover:shadow-md hover:border-gold/30 transition-all duration-300" style="transition-delay: 300ms">
+            <div class="text-2xl lg:text-3xl font-bold text-gold"><span data-counter data-target="4" data-duration="1400">0</span></div>
+            <div class="text-navy text-[10px] sm:text-xs font-semibold mt-1.5 leading-tight">Released Albums</div>
+          </div>
         </div>
-        {% endif %}
         <div class="flex flex-wrap items-center gap-3 mt-6">
           <a href="{% url 'core:about' %}" class="group inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-gold to-amber-400 text-navy text-sm font-bold shadow-gold hover:shadow-deep hover:-translate-y-0.5 transition-all duration-300">
             <span>Discover Our Story</span>
@@ -272,17 +276,13 @@ function heroSlider() {
           </a>
         </div>
       </div>
-      {% if homepage_page.featured_image %}
       <div class="relative">
         <div class="absolute -inset-3 bg-gold/15 rounded-3xl -rotate-2"></div>
-        <img src="{{ homepage_page.featured_image.url }}" alt="{{ homepage_page.featured_image_alt|default:'Jehovah Jireh Choir during worship' }}" class="relative w-full h-72 sm:h-80 lg:h-96 object-cover rounded-2xl shadow-deep" loading="lazy">
+        <img src="{% static 'images/who-we-are.jpg' %}" alt="Jehovah Jireh Choir singing together during worship" class="relative w-full h-72 sm:h-80 lg:h-96 object-cover rounded-2xl shadow-deep" loading="lazy">
       </div>
-      {% endif %}
     </div>
-    {% endif %}
   </div>
 </section>
-{% endif %}
 
 <section class="py-10 lg:py-14 bg-offwhite">
   <div class="max-w-[1400px] mx-auto px-6">
