@@ -362,7 +362,6 @@ function heroSlider() {
   </div>
 </section>
 
-
 {# ══════════════════════════════ 6. MUSIC + UPCOMING EVENT ══════════ #}
 <section class="music-events-section" aria-label="Latest music and upcoming event">
   <div class="music-events-container">
@@ -370,37 +369,27 @@ function heroSlider() {
       <div class="music-panel">
         <header class="music-events-heading">
           <h2>Latest Music Release</h2>
-          <a href="{% url 'music:song-list' %}">View all songs <span aria-hidden="true">→</span></a>
+          <a href="https://open.spotify.com/artist/6Dxg8wsM7hD4jyTLPdTn9R" target="_blank" rel="noopener noreferrer">View all songs <span aria-hidden="true">→</span></a>
         </header>
-
-        {% if latest_album %}
-        <article class="album-feature-card">
+        <article class="album-feature-card spotify-album-card">
           <div class="album-cover-wrap">
-            {% if latest_album.cover %}
-            <img src="{{ latest_album.cover.url }}" alt="Cover artwork for {{ latest_album.title }}" class="album-cover" />
-            {% else %}
-            <img src="/media/slider/choir-hero-01-desktop.jpg" alt="Jehovah Jireh Choir performing" class="album-cover" />
-            {% endif %}
+            <img src="{% static 'images/who-we-are.jpg' %}" alt="Jehovah Jireh Choir performing" class="album-cover" />
+            <span class="spotify-photo-badge"><span aria-hidden="true">●</span> Official Spotify</span>
           </div>
-          <div class="album-feature-content">
-            <p class="album-kicker">Album{% if latest_album.year %} {{ latest_album.year }}{% endif %}</p>
-            <h3>{{ latest_album.title }}</h3>
-            {% if latest_album.song_count %}<p class="album-meta">{{ latest_album.song_count }} Song{{ latest_album.song_count|pluralize }}</p>{% endif %}
-            <ol class="album-track-list">
-              {% for song in latest_album.homepage_tracks|slice:":4" %}
-              <li><a href="{{ song.get_absolute_url }}">
-                <span class="track-number">{{ forloop.counter|stringformat:"02d" }}</span>
-                <span class="track-title">{{ song.title }}</span>
-                <span class="track-action" aria-hidden="true">{% if song.audio_file or song.youtube_url %}▶{% else %}→{% endif %}</span>
-              </a></li>
-              {% empty %}<li class="track-empty">Track listing coming soon.</li>{% endfor %}
-            </ol>
-            <a href="{{ latest_album.get_absolute_url }}" class="album-listen-button"><span aria-hidden="true">🎧</span> Listen Now</a>
+          <div class="spotify-album-player">
+            <iframe
+              style="border-radius:12px"
+              src="https://open.spotify.com/embed/artist/6Dxg8wsM7hD4jyTLPdTn9R?utm_source=generator&theme=0"
+              width="100%"
+              height="352"
+              frameborder="0"
+              allowfullscreen
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              title="Spotify songs by Jehovah Jireh Choir">
+            </iframe>
           </div>
         </article>
-        {% else %}
-        <div class="music-events-empty"><p>New music coming soon.</p><a href="{% url 'music:album-list' %}">Browse our music</a></div>
-        {% endif %}
       </div>
 
       <div class="event-panel">

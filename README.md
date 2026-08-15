@@ -80,3 +80,17 @@ docker compose run --rm web python manage.py check
 
 The local SQLite database is stored in `db.sqlite3` within the project directory,
 so its data remains available when the container is stopped or recreated.
+
+## Production media persistence
+
+Dashboard uploads are stored under `/app/media`. When deploying the Dockerfile
+directly in Coolify, configure a persistent volume whose destination is exactly:
+
+```text
+/app/media
+```
+
+Without this mount, uploaded logos and photographs are deleted whenever Coolify
+replaces the application container. If deploying with `docker-compose.prod.yml`,
+the `media_data` volume is already declared. See `COOLIFY_DEPLOYMENT.md` for the
+complete production setup.

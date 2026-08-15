@@ -14,6 +14,8 @@ python -c "import secrets; print(secrets.token_urlsafe(64))"
 
 ## 2. Create the Coolify resource
 
+### Recommended: Docker Compose deployment
+
 1. In Coolify, create a new resource from the Git repository.
 2. Select Docker Compose and use `docker-compose.prod.yml`.
 3. Assign the public domain to the `nginx` service on port `80`.
@@ -46,6 +48,29 @@ After the first successful deployment, change `RUN_SEED_ON_DEPLOY` to `false`. T
 Add SMTP variables when email delivery is ready. Sensitive values should be runtime-only variables. The compose file marks required variables so Coolify stops before an incomplete deployment.
 
 Deploy once. The web entrypoint automatically runs migrations and collects static files on every release.
+
+### If Coolify is configured to build the Dockerfile directly
+
+The named volumes in `docker-compose.prod.yml` are ignored in Dockerfile mode.
+Before uploading any images, open the Coolify application and add persistent
+storage with this container destination:
+
+```text
+/app/media
+```
+
+Use a stable named volume such as `jjc-media` as the storage source. Do not
+mount it at `/app`, because that would hide the application code. Static files
+do not require this media volume: they are rebuilt by `collectstatic` during
+each deployment.
+
+After adding the volume, redeploy once and then upload the site logo, hero
+images, article images, album covers, and gallery files through the production
+dashboard. Files uploaded before the persistent volume was configured belonged
+to an old disposable container and must be uploaded again.
+
+To verify persistence, upload one test image, redeploy, and confirm the same
+`/media/...` URL still returns HTTP 200.
 
 ## 3. Export local SQLite content and media
 
