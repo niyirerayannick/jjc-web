@@ -1,6 +1,12 @@
 #!/bin/sh
 set -eu
 
+# manage.py defaults to development/SQLite for local use. A production image
+# must set this before running migrations so startup and Gunicorn use the same
+# PostgreSQL database even when the platform only builds the Dockerfile.
+export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-config.settings.production}"
+
+echo "Using Django settings: ${DJANGO_SETTINGS_MODULE}"
 echo "Applying database migrations..."
 python manage.py migrate --noinput
 
