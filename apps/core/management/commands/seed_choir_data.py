@@ -425,6 +425,54 @@ community ministry, the choir remains committed to:</p>
                 'is_featured': True,
             },
         ]
+
+        # A complete sample newsroom makes the homepage editorial layout useful
+        # immediately after a fresh deployment. These records remain editable in admin.
+        category_map = {category.name: category for category in Category.objects.all()}
+        sample_news = [
+            ('Choir Begins Preparations for the Next Imana Iratsinze Gathering', 'imana-iratsinze-preparations', 'Events', 'Rehearsals and ministry planning have begun for the choir’s next annual worship gathering.'),
+            ('Young Singers Join Jehovah Jireh Junior Mentorship Programme', 'junior-mentorship-programme', 'News', 'A new group of young singers has started a season of musical and spiritual mentorship.'),
+            ('A Night of Worship, Testimony and Prayer in Kigali', 'night-of-worship-kigali', 'Concerts', 'Believers gathered in Kigali for an evening centred on worship, testimony and prayer.'),
+            ('Community Outreach Brings Encouragement to Vulnerable Families', 'community-outreach-vulnerable-families', 'Outreach', 'Choir members visited families and shared practical support, prayer and encouragement.'),
+            ('Jehovah Jireh Academy Opens a New Training Season', 'academy-new-training-season', 'News', 'Children are learning worship, choir discipline, music and the history of the ministry.'),
+            ('Behind the Music: How the Choir Prepares a New Song', 'behind-the-music-new-song', 'News', 'A look inside the prayer, writing, arrangement and rehearsal process behind every release.'),
+            ('Gospel Ministry Visit Strengthens the Church in Musanze', 'gospel-ministry-visit-musanze', 'Evangelization', 'Songs, scripture and testimonies brought a message of hope to believers in Musanze.'),
+            ('Post Cepiens Members Share Lessons with University Singers', 'post-cepiens-mentorship-ulk', 'Testimonies', 'Senior members returned to mentor ULK singers and share lessons from their ministry journey.'),
+            ('Choir Marks Another Year of God’s Faithfulness', 'another-year-gods-faithfulness', 'Testimonies', 'Members reflected on the provision, growth and transformed lives witnessed through the ministry.'),
+            ('Worship Team Completes Weekend Vocal Workshop', 'weekend-vocal-workshop', 'News', 'The workshop focused on vocal health, harmony, stage discipline and serving through excellence.'),
+            ('Evangelization Team Announces Community Prayer Visits', 'community-prayer-visits', 'Evangelization', 'Teams will visit communities to pray with families and share the message of Jesus Christ.'),
+            ('Four Albums, One Continuing Story of Gospel Music', 'four-albums-gospel-story', 'News', 'The choir looks back at four albums and the messages that continue to encourage listeners.'),
+            ('Members Serve Through Hospital Visitation Ministry', 'hospital-visitation-ministry', 'Outreach', 'The ministry shared prayer and encouragement with patients, families and healthcare workers.'),
+            ('New Rehearsal Calendar Supports Every Choir Generation', 'new-rehearsal-calendar', 'Events', 'A coordinated rehearsal calendar will bring Academy, Junior, ULK and Post Cepiens together.'),
+            ('Testimony: A Song That Restored Hope During a Difficult Season', 'song-restored-hope-testimony', 'Testimonies', 'One listener shares how a Jehovah Jireh song became a source of courage and renewed faith.'),
+        ]
+        sample_images = [
+            'slider/choir-hero-01-desktop.jpg',
+            'slider/choir-hero-02-desktop.jpg',
+            'slider/choir-hero-03-desktop.jpg',
+        ]
+        for index, (title, slug, category_name, excerpt) in enumerate(sample_news):
+            articles_data.append({
+                'title': title,
+                'slug': slug,
+                'category': category_map.get(category_name, news_category),
+                'excerpt': excerpt,
+                'content': (
+                    f'<p>{excerpt}</p>'
+                    '<p>Jehovah Jireh Choir continues to serve God and people through '
+                    'worship, evangelization, discipleship and compassionate community ministry.</p>'
+                    '<p>Members thanked partners, churches and friends of the ministry for '
+                    'their prayers and continued support.</p>'
+                ),
+                'featured_image': sample_images[index % len(sample_images)],
+                'published_date': timezone.now() - timedelta(days=index + 1),
+                'status': 'published',
+                'is_featured': index == 0,
+            })
+
+        # Give the original seed stories imagery as well, without requiring uploads.
+        for index, article_data in enumerate(articles_data):
+            article_data.setdefault('featured_image', sample_images[index % len(sample_images)])
         
         article_count = 0
         for article_data in articles_data:
@@ -439,6 +487,8 @@ community ministry, the choir remains committed to:</p>
                     'published_date': article_data['published_date'],
                     'status': article_data['status'],
                     'is_featured': article_data.get('is_featured', False),
+                    'featured_image': article_data.get('featured_image', ''),
+                    'featured_image_alt': article_data['title'],
                 }
             )
             if created:

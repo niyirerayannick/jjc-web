@@ -1,76 +1,74 @@
+{% load static %}
 <div id="ministry-content" class="ministry-content">
   <nav class="ministry-tabs" aria-label="Filter ministry articles">
-    <a href="?ministry_category=all&amp;ministry_page=1#ministry-section" class="{% if ministry_category == 'all' %}is-active{% endif %}" hx-get="{% url 'cms:ministry-tabs' %}?ministry_category=all&amp;ministry_page=1" hx-target="#ministry-content" hx-swap="outerHTML" hx-push-url="?ministry_category=all&amp;ministry_page=1#ministry-section">All</a>
+    <a href="?ministry_category=all&amp;ministry_page=1#ministry-section" class="{% if ministry_category == 'all' %}is-active{% endif %}" hx-get="{% url 'cms:ministry-tabs' %}?ministry_category=all&amp;ministry_page=1" hx-target="#ministry-content" hx-swap="outerHTML" hx-push-url="?ministry_category=all&amp;ministry_page=1#ministry-section">All News</a>
     {% for category in ministry_categories %}<a href="?ministry_category={{ category.slug|urlencode }}&amp;ministry_page=1#ministry-section" class="{% if ministry_category == category.slug %}is-active{% endif %}" hx-get="{% url 'cms:ministry-tabs' %}?ministry_category={{ category.slug|urlencode }}&amp;ministry_page=1" hx-target="#ministry-content" hx-swap="outerHTML" hx-push-url="?ministry_category={{ category.slug|urlencode }}&amp;ministry_page=1#ministry-section">{{ category.name }}</a>{% endfor %}
   </nav>
 
   {% if ministry_featured %}
-  <div class="ministry-newsroom-grid {% if ministry_sidebar_ads %}has-ads{% endif %}">
-    <div class="ministry-feed ministry-left-feed" aria-label="Latest ministry stories">
-      {% for article in ministry_left_feed %}
-      <article class="ministry-feed-story">
-        <a href="{{ article.get_absolute_url }}" class="ministry-feed-image">
-          {% if article.featured_image %}<img src="{{ article.featured_image.url }}" alt="{{ article.featured_image_alt|default:article.title }}" loading="lazy" />{% else %}<img src="/media/slider/choir-hero-01-desktop.jpg" alt="Jehovah Jireh Choir ministry" loading="lazy" />{% endif %}
-          {% if article.has_video %}<span class="ministry-play-icon ministry-play-small" aria-label="Video article">▶</span>{% endif %}
-        </a>
-        <div><h3><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h3><p>{% if article.category %}<span>{{ article.category.name }}</span> · {% endif %}{{ article.published_date|date:"M j, Y" }}</p></div>
+  <div class="news-front-page">
+    <article class="news-lead-story">
+      <a href="{{ ministry_featured.get_absolute_url }}" class="news-lead-image">
+        <img src="{% if ministry_featured.featured_image %}{{ ministry_featured.featured_image.url }}{% else %}{% static 'images/who-we-are.jpg' %}{% endif %}" alt="{{ ministry_featured.featured_image_alt|default:ministry_featured.title }}" />
+        {% if ministry_featured.category %}<span class="news-category-ribbon">{{ ministry_featured.category.name }}</span>{% endif %}
+      </a>
+      <div class="news-lead-copy">
+        <p class="news-meta">{{ ministry_featured.published_date|date:"F j, Y" }} · {{ ministry_featured.reading_time }} min read</p>
+        <h3><a href="{{ ministry_featured.get_absolute_url }}">{{ ministry_featured.title }}</a></h3>
+        <p class="news-excerpt">{{ ministry_featured.excerpt|truncatechars:210 }}</p>
+      </div>
+    </article>
+
+    <div class="news-top-stories">
+      <div class="news-section-bar">Featured stories</div>
+      {% for article in ministry_top_stories %}
+      <article class="news-top-card">
+        <a href="{{ article.get_absolute_url }}"><img src="{% if article.featured_image %}{{ article.featured_image.url }}{% else %}{% static 'images/who-we-are.jpg' %}{% endif %}" alt="{{ article.title }}" /></a>
+        <div>{% if article.category %}<span>{{ article.category.name }}</span>{% endif %}<h4><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h4><p>{{ article.published_date|date:"M j, Y" }} · {{ article.reading_time }} min</p></div>
       </article>
-      {% empty %}<p class="ministry-feed-empty">More stories coming soon.</p>{% endfor %}
+      {% endfor %}
     </div>
 
-    <div class="ministry-center-features">
-      <article class="ministry-center-story ministry-main-feature">
-        <a href="{{ ministry_featured.get_absolute_url }}" class="ministry-center-image">
-          {% if ministry_featured.featured_image %}<img src="{{ ministry_featured.featured_image.url }}" alt="{{ ministry_featured.featured_image_alt|default:ministry_featured.title }}" />{% else %}<img src="/media/slider/choir-hero-01-desktop.jpg" alt="Jehovah Jireh Choir ministry" />{% endif %}
-          <span class="ministry-center-gradient"></span>
-          {% if ministry_featured.has_video %}<span class="ministry-play-icon" aria-label="Video article">▶</span>{% endif %}
-          <span class="ministry-center-overlay"><span class="ministry-center-meta">{% if ministry_featured.category %}{{ ministry_featured.category.name }} · {% endif %}{{ ministry_featured.published_date|date:"M j, Y" }} · {{ ministry_featured.reading_time }} min read</span><strong>{{ ministry_featured.title }}</strong></span>
-        </a>
-        {% if ministry_featured.excerpt %}<p class="ministry-center-excerpt">{{ ministry_featured.excerpt|truncatechars:150 }}</p>{% endif %}
-      </article>
-
-      {% if ministry_secondary_feature %}
-      <article class="ministry-center-story ministry-second-feature">
-        <a href="{{ ministry_secondary_feature.get_absolute_url }}" class="ministry-center-image">
-          {% if ministry_secondary_feature.featured_image %}<img src="{{ ministry_secondary_feature.featured_image.url }}" alt="{{ ministry_secondary_feature.featured_image_alt|default:ministry_secondary_feature.title }}" loading="lazy" />{% else %}<img src="/media/slider/choir-hero-02-desktop.jpg" alt="Jehovah Jireh Choir ministry" loading="lazy" />{% endif %}
-          <span class="ministry-center-gradient"></span>
-          {% if ministry_secondary_feature.has_video %}<span class="ministry-play-icon ministry-play-small" aria-label="Video article">▶</span>{% endif %}
-          <span class="ministry-center-overlay"><span class="ministry-center-meta">{% if ministry_secondary_feature.category %}{{ ministry_secondary_feature.category.name }} · {% endif %}{{ ministry_secondary_feature.published_date|date:"M j, Y" }}</span><strong>{{ ministry_secondary_feature.title }}</strong></span>
-        </a>
-      </article>
-      {% endif %}
-    </div>
-
-    <div class="ministry-feed ministry-right-feed" aria-label="More ministry stories">
-      {% for article in ministry_right_feed %}
-      <article class="ministry-feed-story ministry-feed-story-small">
-        <a href="{{ article.get_absolute_url }}" class="ministry-feed-image">
-          {% if article.featured_image %}<img src="{{ article.featured_image.url }}" alt="{{ article.featured_image_alt|default:article.title }}" loading="lazy" />{% else %}<img src="/media/slider/choir-hero-03-desktop.jpg" alt="Jehovah Jireh Choir ministry" loading="lazy" />{% endif %}
-          {% if article.has_video %}<span class="ministry-play-icon ministry-play-small" aria-label="Video article">▶</span>{% endif %}
-        </a>
-        <div><h3><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h3><p>{% if article.category %}<span>{{ article.category.name }}</span> · {% endif %}{{ article.published_date|date:"M j, Y" }}</p></div>
-      </article>
-      {% empty %}<p class="ministry-feed-empty">More stories coming soon.</p>{% endfor %}
-    </div>
-
-    {% if ministry_sidebar_ads %}
     <aside class="ministry-ad-column" aria-label="Sponsored advertisements">
-      {% for ad in ministry_sidebar_ads %}
-      <a href="{{ ad.destination_url }}" target="_blank" rel="noopener sponsored" class="ministry-sidebar-ad" onclick="fetch('{% url 'advertising:track' ad.pk %}', {method:'POST', headers:{'X-CSRFToken':'{{ csrf_token }}','Content-Type':'application/x-www-form-urlencoded'}, body:'is_click=1'})">
-        <img src="{{ ad.ad_image.url }}" alt="{{ ad.alt_text|default:ad.business_name }}" loading="lazy" onload="fetch('{% url 'advertising:track' ad.pk %}', {method:'POST', headers:{'X-CSRFToken':'{{ csrf_token }}','Content-Type':'application/x-www-form-urlencoded'}, body:'is_click=0'})" />
-        <span>Sponsored</span>
+      {% for ad in ministry_sidebar_ads %}<a href="{{ ad.destination_url }}" target="_blank" rel="noopener sponsored" class="ministry-sidebar-ad"><img src="{{ ad.ad_image.url }}" alt="{{ ad.alt_text|default:ad.business_name }}" loading="lazy" /><span>Sponsored</span></a>
+      {% empty %}
+      <a href="{% url 'contact:contact' %}" class="ministry-ad-placeholder">
+        <span>Advertisement</span>
+        <strong>Your brand here</strong>
+        <small>Partner with our ministry</small>
+      </a>
+      <a href="{% url 'contact:contact' %}" class="ministry-ad-placeholder is-compact">
+        <span>Sponsored space</span>
+        <strong>Advertise with us</strong>
       </a>
       {% endfor %}
     </aside>
-    {% endif %}
+
+    <section class="news-stream news-updates">
+      <div class="news-section-bar">Latest ministry news</div>
+      {% for article in ministry_updates %}
+      <article class="news-stream-row">
+        <a href="{{ article.get_absolute_url }}"><img src="{% if article.featured_image %}{{ article.featured_image.url }}{% else %}{% static 'images/who-we-are.jpg' %}{% endif %}" alt="{{ article.title }}" loading="lazy" /></a>
+        <div><h4><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h4><p>{{ article.published_date|date:"M j, Y" }} · {% if article.category %}{{ article.category.name }}{% endif %}</p></div>
+      </article>
+      {% endfor %}
+    </section>
+
+    <section class="news-community">
+      <div class="news-section-bar">Community &amp; testimonies</div>
+      {% for article in ministry_community %}
+      <article class="news-community-card">
+        <a href="{{ article.get_absolute_url }}"><img src="{% if article.featured_image %}{{ article.featured_image.url }}{% else %}{% static 'images/who-we-are.jpg' %}{% endif %}" alt="{{ article.title }}" loading="lazy" /></a>
+        <div><h4><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h4><p>{{ article.excerpt|truncatechars:80 }}</p></div>
+      </article>
+      {% endfor %}
+    </section>
   </div>
 
-  {% if ministry_page_obj.paginator.num_pages > 1 %}
-  <nav class="ministry-pagination" aria-label="Ministry article pages">
-    {% if ministry_page_obj.has_previous %}<a href="?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.previous_page_number }}#ministry-section" hx-get="{% url 'cms:ministry-tabs' %}?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.previous_page_number }}" hx-target="#ministry-content" hx-swap="outerHTML" hx-push-url="?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.previous_page_number }}#ministry-section">← Previous</a>{% endif %}
-    <div>{% for page_number in ministry_page_obj.paginator.page_range %}<a href="?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ page_number }}#ministry-section" class="{% if page_number == ministry_page_obj.number %}is-current{% endif %}" {% if page_number == ministry_page_obj.number %}aria-current="page"{% endif %} hx-get="{% url 'cms:ministry-tabs' %}?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ page_number }}" hx-target="#ministry-content" hx-swap="outerHTML" hx-push-url="?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ page_number }}#ministry-section">{{ page_number }}</a>{% endfor %}</div>
-    {% if ministry_page_obj.has_next %}<a href="?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.next_page_number }}#ministry-section" hx-get="{% url 'cms:ministry-tabs' %}?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.next_page_number }}" hx-target="#ministry-content" hx-swap="outerHTML" hx-push-url="?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.next_page_number }}#ministry-section">Next →</a>{% endif %}
-  </nav>
-  {% endif %}
+  {% if ministry_page_obj.paginator.num_pages > 1 %}<nav class="ministry-pagination" aria-label="Ministry article pages">
+    {% if ministry_page_obj.has_previous %}<a href="?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.previous_page_number }}#ministry-section" hx-get="{% url 'cms:ministry-tabs' %}?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.previous_page_number }}" hx-target="#ministry-content" hx-swap="outerHTML">← Previous</a>{% endif %}
+    <div>{% for number in ministry_page_obj.paginator.page_range %}<a href="?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ number }}#ministry-section" class="{% if number == ministry_page_obj.number %}is-current{% endif %}" hx-get="{% url 'cms:ministry-tabs' %}?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ number }}" hx-target="#ministry-content" hx-swap="outerHTML">{{ number }}</a>{% endfor %}</div>
+    {% if ministry_page_obj.has_next %}<a href="?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.next_page_number }}#ministry-section" hx-get="{% url 'cms:ministry-tabs' %}?ministry_category={{ ministry_category|urlencode }}&amp;ministry_page={{ ministry_page_obj.next_page_number }}" hx-target="#ministry-content" hx-swap="outerHTML">Next →</a>{% endif %}
+  </nav>{% endif %}
   {% else %}<div class="ministry-empty-state"><p>No published articles are available in this category yet.</p></div>{% endif %}
 </div>

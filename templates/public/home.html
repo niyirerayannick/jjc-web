@@ -240,7 +240,7 @@ function heroSlider() {
 {% endif %}
 
 {# ═══════════════════════════════════ 5. MINISTRY HIGHLIGHTS ════════ #}
-<section class="py-14 bg-white">
+<section class="py-10 lg:py-11 bg-white">
   <div class="max-w-[1200px] mx-auto px-6">
     <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-12">
       <div class="text-left">
@@ -284,7 +284,7 @@ function heroSlider() {
   </div>
 </section>
 
-<section class="py-10 lg:py-14 bg-offwhite">
+<section class="py-8 lg:py-10 bg-offwhite">
   <div class="max-w-[1400px] mx-auto px-6">
    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
       {% if ministry_areas %}
@@ -550,19 +550,15 @@ function heroSlider() {
 </section>
 {% endcomment %}
 
-<section class="ministry-newsletter" id="ministry-section" aria-labelledby="ministry-heading">
+<section class="ministry-newsletter" id="ministry-section" aria-label="Ministry news">
   <div class="ministry-newsletter-container">
-    <header class="ministry-newsletter-header">
-      <h2 id="ministry-heading">Latest From Our Ministry</h2>
-      <a href="{% url 'cms:article-list' %}">View all articles <span aria-hidden="true">→</span></a>
-    </header>
     {% include "cms/partials/ministry_newsletter.html" %}
   </div>
 </section>
 
 {# ═══════════════════════════════════════ 8. GALLERY HIGHLIGHTS ═════ #}
 {% if gallery_media %}
-<section class="py-20 lg:py-28 bg-white">
+<section class="py-12 lg:py-16 bg-white">
   <div class="max-w-[1400px] mx-auto px-6">
     <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
       <div>
@@ -640,7 +636,7 @@ function lightbox() {
 
 {# ═══════════════════════════════════════ 9. PARTNERS & SPONSORS ════ #}
 {% if partners %}
-<section class="py-16 lg:py-20 bg-offwhite border-y border-gray-100">
+<section class="py-10 lg:py-12 bg-offwhite border-y border-gray-100">
   <div class="max-w-[1400px] mx-auto px-6">
     <div class="text-center mb-10">
       <div class="flex items-center justify-center gap-3 mb-4">
@@ -668,7 +664,7 @@ function lightbox() {
 
 {# ═══════════════════════════════════════ 11. AD BANNER ═════════════ #}
 {% if mid_banner_ad %}
-<section class="py-8 bg-offwhite">
+<section class="py-5 bg-offwhite">
   <div class="max-w-[1400px] mx-auto px-6">
     <a href="{{ mid_banner_ad.destination_url }}"
        target="_blank" rel="noopener sponsored"

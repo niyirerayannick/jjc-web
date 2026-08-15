@@ -18,7 +18,7 @@ def ministry_feed_context(request):
     if category_slug != 'all':
         articles = articles.filter(category__slug=category_slug)
 
-    paginator = Paginator(articles, 12)
+    paginator = Paginator(articles, 20)
     page_obj = paginator.get_page(request.GET.get('ministry_page', 1))
     page_articles = list(page_obj.object_list)
 
@@ -49,5 +49,10 @@ def ministry_feed_context(request):
         'ministry_secondary_feature': page_articles[1] if len(page_articles) > 1 else None,
         'ministry_left_feed': page_articles[2:7],
         'ministry_right_feed': page_articles[7:12],
+        'ministry_latest_feed': page_articles[1:8],
+        'ministry_more_feed': page_articles[8:12],
+        'ministry_top_stories': page_articles[1:3],
+        'ministry_updates': page_articles[3:10],
+        'ministry_community': page_articles[16:20],
         'ministry_sidebar_ads': ministry_sidebar_ads,
     }
